@@ -1,0 +1,27 @@
+[
+  {
+    "id": "5bc97854203a48860f9cf1cf",
+    "name": "Ola",
+    "age": 38
+  },
+  {
+    "id": "5bc97854546fde5c3ab12e07",
+    "name": "Lindsey",
+    "age": 3
+  },
+  {
+    "id": "5bc97854749928d004cedd78",
+    "name": "Dana",
+    "age": 57
+  },
+  {
+    "id": "5bc9785443384b698842d840",
+    "name": "Marie",
+    "age": 67
+  },
+  {
+    "id": "5bc97854e40f818d71138230",
+    "name": "Sheryl",
+    "age": 75
+  }
+]

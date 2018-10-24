@@ -1,0 +1,80 @@
+[
+  {
+    "id": "root",
+    "name": "Hierarchy",
+    "children": [
+      {
+        "id": "b893139a-65e7-4654-899f-d0f9114ba6c2",
+        "name": "Parent 1",
+        "children": []
+      },
+      {
+        "id": "1f857d37-ed1a-41ce-8999-73d52bb0e649",
+        "name": "Parent 2",
+        "children": [
+          {
+            "id": "1a5c52dc-ca53-47b0-8b4a-1e85e806a17c",
+            "name": "Parent 2.1",
+            "children": [
+              {
+                "id": "d3d1fcce-3e6d-418a-bd2e-6a091563eab2",
+                "name": "Gomez",
+                "age": 75
+              },
+              {
+                "id": "5a188510-d5ee-4e30-923d-d26ad5385ae7",
+                "name": "Frieda",
+                "age": 16
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "72ffb370-ec90-4746-a85f-5924f5e81ed4",
+        "name": "Parent 3",
+        "children": [
+          {
+            "id": "679b2660-4e19-4bfe-8733-b69670a903bb",
+            "name": "Parent 3.1",
+            "children": [
+              {
+                "id": "67422660-4e19-4bfe-8733-b69670a903cc",
+                "name": "Parent 3.1.1",
+                "children": [
+                  {
+                    "id": "a8c642b4-cf6b-423c-a4e4-b7595099116c",
+                    "name": "Martin",
+                    "age": 57
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "33cf73d0-1c7f-465b-b19e-15f6cb41e0eb",
+        "name": "Parent 4",
+        "children": [
+          {
+            "id": "0dae9c0a-85e8-4235-a46f-d65777b13a80",
+            "name": "Parent 4.1",
+            "children": [
+              {
+                "id": "6ba489e5-58da-4fbe-89cf-bdc342923fac",
+                "name": "Marta",
+                "age": 34
+              },
+              {
+                "id": "45945861-6b79-4112-8f14-a5283f103b65",
+                "name": "Yates",
+                "age": 28
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
