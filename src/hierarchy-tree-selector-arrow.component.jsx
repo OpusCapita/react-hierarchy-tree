@@ -8,20 +8,20 @@ import styled from 'styled-components';
 const Arrow = styled(Icon)`
   opacity: ${props => (props.disabled ? '0.5' : '1')};
 `;
-const HierarchyTreeSelectorArrows = ({ icon, onClick, disabled }) => (
+const HierarchyTreeSelectorArrow = ({ icon, onClick, disabled }) => (
   <Primitive.BorderlessButton onClick={onClick} disabled={disabled}>
     <Arrow type="indicator" name={icon} disabled={disabled} />
   </Primitive.BorderlessButton>
 );
 
-HierarchyTreeSelectorArrows.propTypes = {
+HierarchyTreeSelectorArrow.propTypes = {
   icon: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
 };
 
-HierarchyTreeSelectorArrows.defaultProps = {
+HierarchyTreeSelectorArrow.defaultProps = {
   disabled: true,
 };
 
-export default HierarchyTreeSelectorArrows;
+export default HierarchyTreeSelectorArrow;

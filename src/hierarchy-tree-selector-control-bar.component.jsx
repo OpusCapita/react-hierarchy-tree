@@ -25,8 +25,10 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.selectedValue !== nextProps.selectedValue) {
-      this.setState({ value: nextProps.selectedValue || '' });
+    if (this.props.selectedTreeItem !== nextProps.selectedTreeItem) {
+      const inputValue = nextProps.selectedTreeItem ?
+        nextProps.selectedTreeItem[nextProps.valueKey] : '';
+      this.setState({ value: inputValue });
     }
   }
 
@@ -45,6 +47,9 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
       [idKey]: uuid(),
       [valueKey]: defaultNewNodeValue,
       [childKey]: [],
+    }, () => {
+      this.input.select();
+      this.input.focus();
     });
   };
 
@@ -53,22 +58,50 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
     onDeleteClick();
   };
 
+  /**
+   * Is selected item a parent (has a [childKey])
+   * @returns {boolean}
+   */
+  isSelectedTreeItemParent = () => {
+    const { childKey, selectedTreeItem } = this.props;
+    return selectedTreeItem ? !!selectedTreeItem[childKey] : false;
+  };
+
+  /**
+   * Is add button disabled. Add button is disabled, if:
+   * - selected tree node is a leaf
+   * - contains leafs
+   * @returns {boolean}
+   */
+  isAddDisabled = () => {
+    const { selectedTreeItem, childKey } = this.props;
+    if (!selectedTreeItem) return false;
+    return !this.isSelectedTreeItemParent() ||
+      !!selectedTreeItem[childKey].find(childItem => !childItem[childKey]);
+  };
+
   render() {
-    const {
-      addDisabled, inputDisabled, deleteDisabled, translations,
-    } = this.props;
+    const { translations } = this.props;
 
     return (
       <Container>
         <Primitive.Input
           onChange={this.onInputChange}
           value={this.state.value}
-          disabled={inputDisabled}
+          disabled={!this.isSelectedTreeItemParent()}
+          innerRef={(input) => {
+            this.input = input;
+          }}
         />
-        <Button onClick={this.onAddButtonClick} disabled={addDisabled}>{translations.add}</Button>
+        <Button
+          onClick={this.onAddButtonClick}
+          disabled={this.isAddDisabled()}
+        >
+          {translations.add}
+        </Button>
         <Button
           onClick={this.onDeleteButtonClick}
-          disabled={deleteDisabled}
+          disabled={!this.isSelectedTreeItemParent()}
         >
           {translations.delete}
         </Button>
@@ -78,24 +111,18 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 }
 
 HierarchyTreeSelectorControlBar.propTypes = {
-  addDisabled: PropTypes.bool,
-  deleteDisabled: PropTypes.bool,
-  inputDisabled: PropTypes.bool,
   onAddNewClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
   defaultNewNodeValue: PropTypes.string.isRequired,
-  selectedValue: PropTypes.string,
   onInputChange: PropTypes.func.isRequired,
   idKey: PropTypes.string.isRequired,
   valueKey: PropTypes.string.isRequired,
   childKey: PropTypes.string.isRequired,
   translations: PropTypes.shape({}).isRequired,
+  selectedTreeItem: PropTypes.shape({}),
 };
 
 HierarchyTreeSelectorControlBar.defaultProps = {
-  addDisabled: false,
-  deleteDisabled: false,
-  inputDisabled: false,
-  selectedValue: null,
+  selectedTreeItem: null,
 };
 
