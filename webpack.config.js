@@ -6,7 +6,7 @@ const autoprefixer = require('autoprefixer');
 const precss = require('precss');
 const flexbugs = require('postcss-flexbugs-fixes');
 
-const libraryName = 'react-component-template';
+const libraryName = 'react-hierarchy-tree';
 
 const isProd = process.env.NODE_ENV === 'production';
 

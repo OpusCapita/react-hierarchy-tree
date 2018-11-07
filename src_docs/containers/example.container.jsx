@@ -1,29 +1,39 @@
 import React from 'react';
-import { Panel, Grid, Row, Col } from 'react-bootstrap';
+import { Primitive, theme } from '@opuscapita/oc-cm-common-layouts';
+import styled, { ThemeProvider } from 'styled-components';
+import { OCAlertsProvider } from '@opuscapita/react-alerts';
+// app imports
 import ExampleComponent from '../components/example.component';
 import GithubLogo from '../images/logo-github.svg';
 
+const Container = styled.div`
+  padding: ${props => props.theme.gutterWidth};
+  > header {
+    display: flex;
+      padding: ${props => props.theme.gutterWidth} 0;
+  }
+`;
+
+const Panel = styled.div`
+  background: #fff;
+  padding: 2rem;
+`;
+
+const Title = styled(Primitive.Title)`
+  flex: 1;
+`;
 export default () => (
-  <Grid>
-    <Row>
-      <Col>
-        <Row>
-          <Col xs={10}>
-            <h3>Hierarchy Tree Selector</h3>
-          </Col>
-          <Col xs={2}>
-            <a
-              href="https://github.com/OpusCapita/react-component-template"
-              style={{ marginTop: '20px', display: 'block' }}
-            >
-              <GithubLogo />
-            </a>
-          </Col>
-        </Row>
-        <Panel>
-          <ExampleComponent />
-        </Panel>
-      </Col>
-    </Row>
-  </Grid>
+  <ThemeProvider theme={theme}>
+    <Container>
+      <header>
+        <Title>Hierarchy selector</Title>
+        <GithubLogo />
+      </header>
+      <Panel>
+        <ExampleComponent />
+      </Panel>
+      <OCAlertsProvider />
+    </Container>
+  </ThemeProvider>
+
 );

@@ -3,19 +3,37 @@ import PropTypes from 'prop-types';
 import { Primitive } from '@opuscapita/oc-cm-common-layouts';
 import styled from 'styled-components';
 import uuid from 'uuid';
+
 // App imports
+import { isSelectedTreeItemParent } from './hierarchy-tree.utils';
+
+const Title = styled(Primitive.Subtitle)`
+  flex: 1 1 100%;
+`;
+
+const RenameLabel = styled.label`
+  margin: 0 ${props => props.theme.halfGutterWidth} 0 0;
+`;
 
 const Container = styled.div`
-  height:34px;
-  display:flex;
-  margin-bottom: ${props => props.theme.gutterWidth};
+  height: ${props => props.height};
+  display: flex;
+  align-items: center;
 `;
 
 const Button = styled(Primitive.Button)`
   margin-left: ${props => props.theme.halfGutterWidth};
-  width: 120px;
+  min-width: 120px;
 `;
 
+const Controls = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const RenameField = styled(Primitive.Input)`
+  min-width: 200px;
+`;
 export default class HierarchyTreeSelectorControlBar extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -40,12 +58,12 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 
   onAddButtonClick = () => {
     const {
-      onAddNewClick, defaultNewNodeValue, idKey, valueKey, childKey,
+      onAddNewClick, translations, idKey, valueKey, childKey,
     } = this.props;
 
     onAddNewClick({
       [idKey]: uuid(),
-      [valueKey]: defaultNewNodeValue,
+      [valueKey]: translations.defaultNewNode,
       [childKey]: [],
     }, () => {
       this.input.select();
@@ -59,15 +77,6 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
   };
 
   /**
-   * Is selected item a parent (has a [childKey])
-   * @returns {boolean}
-   */
-  isSelectedTreeItemParent = () => {
-    const { childKey, selectedTreeItem } = this.props;
-    return selectedTreeItem ? !!selectedTreeItem[childKey] : false;
-  };
-
-  /**
    * Is add button disabled. Add button is disabled, if:
    * - selected tree node is a leaf
    * - contains leafs
@@ -76,35 +85,42 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
   isAddDisabled = () => {
     const { selectedTreeItem, childKey } = this.props;
     if (!selectedTreeItem) return false;
-    return !this.isSelectedTreeItemParent() ||
+    return !isSelectedTreeItemParent(this.props) ||
       !!selectedTreeItem[childKey].find(childItem => !childItem[childKey]);
   };
 
   render() {
-    const { translations } = this.props;
+    const {
+      translations, id, height,
+    } = this.props;
 
     return (
-      <Container>
-        <Primitive.Input
-          onChange={this.onInputChange}
-          value={this.state.value}
-          disabled={!this.isSelectedTreeItemParent()}
-          innerRef={(input) => {
-            this.input = input;
-          }}
-        />
-        <Button
-          onClick={this.onAddButtonClick}
-          disabled={this.isAddDisabled()}
-        >
-          {translations.add}
-        </Button>
-        <Button
-          onClick={this.onDeleteButtonClick}
-          disabled={!this.isSelectedTreeItemParent()}
-        >
-          {translations.delete}
-        </Button>
+      <Container height={height}>
+        <Title>{translations.treeTitle}</Title>
+        <Controls>
+          <RenameLabel htmlFor={`${id}-node-name-input`}>{translations.rename}</RenameLabel>
+          <RenameField
+            onChange={this.onInputChange}
+            id={`${id}-node-name-input`}
+            value={this.state.value}
+            disabled={!isSelectedTreeItemParent(this.props)}
+            innerRef={(input) => {
+              this.input = input;
+            }}
+          />
+          <Button
+            onClick={this.onAddButtonClick}
+            disabled={this.isAddDisabled()}
+          >
+            {translations.add}
+          </Button>
+          <Button
+            onClick={this.onDeleteButtonClick}
+            disabled={!isSelectedTreeItemParent(this.props)}
+          >
+            {translations.delete}
+          </Button>
+        </Controls>
       </Container>
     );
   }
@@ -113,13 +129,14 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 HierarchyTreeSelectorControlBar.propTypes = {
   onAddNewClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
-  defaultNewNodeValue: PropTypes.string.isRequired,
   onInputChange: PropTypes.func.isRequired,
   idKey: PropTypes.string.isRequired,
   valueKey: PropTypes.string.isRequired,
   childKey: PropTypes.string.isRequired,
   translations: PropTypes.shape({}).isRequired,
   selectedTreeItem: PropTypes.shape({}),
+  id: PropTypes.string.isRequired,
+  height: PropTypes.string.isRequired,
 };
 
 HierarchyTreeSelectorControlBar.defaultProps = {

@@ -7,11 +7,13 @@ import { Datagrid, gridShape, gridColumnShape, DatagridActions } from '@opuscapi
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
-
+import { Primitive } from '@opuscapita/oc-cm-common-layouts';
 // App imports
 import ControlBar from './hierarchy-tree-selector-control-bar.component';
 import ArrowControls from './hierarchy-tree-selector-arrow-controls.component';
+import { defaultTranslations } from './hierarchy-tree.utils';
 
+const ACTION_BAR_CONTAINER_HEIGHT = '57px';
 const TREE_ACTIONS = {
   ADD_CHILDREN: 'ADD_CHILDREN',
   MOVE_LEAF: 'MOVE_LEAF',
@@ -22,12 +24,14 @@ const TREE_ACTIONS = {
 const Grid = styled(Datagrid)`
   height: 100%;
   padding: 0;
-  border: 1px solid ${props => props.theme.colors.colorLightGray};
+  .oc-datagrid-main-container {
+    border: 1px solid ${props => props.theme.colors.colorLightGray};
+    border-top:none;
+  }
 `;
 
 const Container = styled.div`
   display: flex;
-  height: calc(100% - 50px);
   > div {
     width: 50%;
     flex: 1 1 100%;
@@ -36,9 +40,13 @@ const Container = styled.div`
 
 const TreeContainer = styled.div`
   height:100%;
-  border: 1px solid ${props => props.theme.colors.colorLightGray};
-  padding: ${props => props.theme.gutterWidth};
-  .rc-tree {
+  .oc-scrollbar-container {
+    border: 1px solid ${props => props.theme.colors.colorLightGray};
+    height: calc(100% - ${ACTION_BAR_CONTAINER_HEIGHT});
+    padding: ${props => props.theme.gutterWidth};
+  }
+  .oc-react-tree {
+    height: 100%;
     .rc-tree-iconEle.rc-tree-icon__customize {
         display:none;
     }
@@ -71,8 +79,9 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     setData: PropTypes.func.isRequired,
     selectedGridItems: ImmutablePropTypes.list.isRequired,
     gridData: ImmutablePropTypes.list.isRequired,
-    defaultNewNodeValue: PropTypes.string,
     translations: PropTypes.shape({}),
+    id: PropTypes.string,
+    onDragDropPrevent: PropTypes.func,
   };
 
   static defaultProps = {
@@ -81,11 +90,9 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     childKey: 'children',
     treeData: [],
     className: '',
-    defaultNewNodeValue: 'New node',
-    translations: {
-      add: 'Add level',
-      delete: 'Delete',
-    },
+    translations: defaultTranslations,
+    id: 'hierarchy-tree',
+    onDragDropPrevent: undefined,
   };
 
   constructor(props) {
@@ -103,10 +110,15 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.setState({ selectedKeys });
   };
 
+  /**
+   * Fired on drag n' drop
+   * @param items
+   */
   onTreeItemDragDrop = (items) => {
     const { onChange } = this.props;
     onChange(items);
   };
+
   /**
    * Deletes a parent node
    */
@@ -155,7 +167,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       type: TREE_ACTIONS.MOVE_LEAF,
       data: this.state.selectedKeys[0],
     };
-    const newGridItems = fromJS([this.findTreeItem(this.state.selectedKeys[0])]);
+    const newGridItems = fromJS([this.getTreeItem(this.state.selectedKeys[0])]);
     const newItems = this.getUpdatedTree(this.state.selectedKeys[0], treeData, action);
 
     this.setDataToGrid(newGridItems);
@@ -215,7 +227,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       const rootItem = array.find(item => item[idKey] === id);
       if (rootItem) {
         if (rootItem[childKey].length) {
-          this.setDataToGrid(fromJS(this.getLeafs(rootItem[childKey])));
+          this.setDataToGrid(fromJS(this.getAllLeafs(rootItem[childKey])));
           this.deselectItem();
         }
         return newItems.filter(item => item[idKey] !== id);
@@ -236,7 +248,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
             // we must first filter the children, so that we won't get leafs from
             // other child branches
             const filteredChildren = item[childKey].filter(childItem => childItem[idKey] === id);
-            this.setDataToGrid(fromJS(this.getLeafs(filteredChildren)));
+            this.setDataToGrid(fromJS(this.getAllLeafs(filteredChildren)));
             this.deselectItem();
             item[childKey] = item[childKey].filter(childItem => childItem[idKey] !== id);
           }
@@ -266,22 +278,46 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   /**
-   * Returns leaf items from a given array
+   * Returns recursively all leaf items from a given array
    * @param array
    * @param alreadyFound (used recursively)
    */
-  getLeafs = (array, alreadyFound = []) => {
+  getAllLeafs = (array, alreadyFound = []) => {
     const { childKey } = this.props;
     let leafs = alreadyFound;
 
     for (let i = 0; i < array.length; i += 1) {
       const item = array[i];
       if (item[childKey]) {
-        leafs = this.getLeafs(item[childKey], alreadyFound);
+        leafs = this.getAllLeafs(item[childKey], alreadyFound);
       }
       if (!item[childKey]) leafs.push(item);
     }
     return leafs;
+  };
+
+  /**
+   * Returns a tree item by ID
+   * @param id
+   * @param array
+   * @param returnParent - return item's parent instead of the item
+   * @param parent - parent item (used recursively)
+   * @returns {{}}
+   */
+  getTreeItem = (id, array = this.props.treeData, returnParent = false, parent = null) => {
+    const { childKey, idKey } = this.props;
+    let found = array.find(item => item[idKey] === id);
+
+    if (found && returnParent) found = parent;
+
+    if (!found) {
+      array.forEach((item) => {
+        if (item[childKey] && !found) {
+          found = this.getTreeItem(id, item[childKey], returnParent, item);
+        }
+      });
+    }
+    return found;
   };
 
   /**
@@ -297,6 +333,55 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.props.setData(grid, gridColumns, newGridItems);
   };
 
+  isDragDropLegal = (items, e) => {
+    const { childKey, treeData, onDragDropPrevent } = this.props;
+    const dropItem = this.getTreeItem(e.node.props.eventKey);
+    const dragItem = this.getTreeItem(e.dragNode.props.eventKey);
+    const dropItemParent = this.getTreeItem(e.node.props.eventKey, treeData, true);
+
+    /**
+     * We want to prevent the move, if:
+     * - Selected item is a parent, and ..
+     *    - Dropping over an item, and ..
+     *      - New parent has leafs OR new parent is a leaf
+     *    - Dropping between items, and ..
+     *        - New parent's parent has leafs
+     *  - Selected item is a leaf, and ...
+     */
+    if (dragItem[childKey]) {
+      if (
+        (!e.dropToGap && (this.hasLeafs(dropItem) || !dropItem[childKey])) ||
+        (dropItemParent && e.dropToGap && (this.hasLeafs(dropItemParent)))
+      ) {
+        if (onDragDropPrevent) onDragDropPrevent();
+        return false;
+      }
+    } else if (
+      (dropItem && !e.dropToGap && this.hasParents(dropItem)) ||
+      (dropItemParent && e.dropToGap && this.hasParents(dropItemParent)) ||
+      (e.dropToGap && !dropItemParent) ||
+      (!e.dropToGap && !dropItem[childKey])
+    ) {
+      // Item has got parent as a child - leaf cannot be dropped here
+      if (onDragDropPrevent) onDragDropPrevent();
+      return false;
+    }
+    return true;
+  };
+
+
+  hasLeafs = (item) => {
+    const { childKey } = this.props;
+    if (!item[childKey]) return false;
+    return !!item[childKey].find(child => !child[childKey]);
+  };
+
+  hasParents = (item) => {
+    const { childKey } = this.props;
+    if (!item[childKey]) return false;
+    return !!item[childKey].find(child => child[childKey]);
+  };
+
   /**
    * Deselects an item, if it is e.g. removed
    */
@@ -304,71 +389,57 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.setState({ selectedKeys: [] });
   };
 
-  /**
-   * Returns a tree item by ID
-   * @param id
-   * @param array
-   * @returns {{}}
-   */
-  findTreeItem = (id, array = this.props.treeData) => {
-    const { childKey, idKey } = this.props;
-    let found = array.find(item => item[idKey] === id);
-    if (!found) {
-      array.forEach((item) => {
-        if (item[childKey] && !found) found = this.findTreeItem(id, item[childKey]);
-      });
-    }
-    return found;
-  };
-
   render() {
     const {
-      valueKey, idKey, treeData, grid, gridColumns, className,
+      valueKey, idKey, treeData, grid, gridColumns, className, translations,
     } = this.props;
 
-    const extendedGrid = Object.assign({}, grid, { defaultShowFilteringRow: true });
+    const mergedGrid = Object.assign({}, grid, { defaultShowFilteringRow: true });
+    const mergedTranslations = Object.assign({}, defaultTranslations, translations);
 
     return (
-      <div className={className}>
-        <ControlBar
-          {...this.props}
-          onAddNewClick={this.onAddNewClick}
-          onDeleteClick={this.onDeleteClick}
-          onInputChange={this.onInputChange}
-          selectedTreeItem={this.findTreeItem(this.state.selectedKeys[0])}
-        />
-        <Container>
-          <PerfectScrollbar>
-            <TreeContainer>
-              <TreeComponent
-                treeData={treeData}
-                dataLookUpKey={idKey}
-                dataLookUpValue={valueKey}
-                onSelect={this.onTreeItemSelect}
-                onDragDrop={this.onTreeItemDragDrop}
-                checkable={false}
-                selectedKeys={this.state.selectedKeys}
-                selectable
-                draggable
-                defaultExpandAll
-              />
-            </TreeContainer>
-          </PerfectScrollbar>
-          <ArrowControls
+      <Container className={className}>
+        <TreeContainer>
+          <ControlBar
             {...this.props}
-            selectedTreeItem={this.findTreeItem(this.state.selectedKeys[0])}
-            onMoveToTreeClick={this.onMoveToTreeClick}
-            onMoveToGridClick={this.onMoveToGridClick}
+            onAddNewClick={this.onAddNewClick}
+            onDeleteClick={this.onDeleteClick}
+            onInputChange={this.onInputChange}
+            selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
+            height={ACTION_BAR_CONTAINER_HEIGHT}
+            translations={mergedTranslations}
           />
-          <Grid
-            grid={extendedGrid}
-            columns={gridColumns}
-            rowSelect
-            multiSelect
-            filtering
-          />
-        </Container>
-      </div>
+          <PerfectScrollbar>
+            <TreeComponent
+              treeData={treeData}
+              dataLookUpKey={idKey}
+              dataLookUpValue={valueKey}
+              onSelect={this.onTreeItemSelect}
+              onDragDrop={this.onTreeItemDragDrop}
+              checkable={false}
+              selectedKeys={this.state.selectedKeys}
+              isDragDropLegal={this.isDragDropLegal}
+              selectable
+              draggable
+              defaultExpandAll
+            />
+          </PerfectScrollbar>
+        </TreeContainer>
+        <ArrowControls
+          {...this.props}
+          selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
+          onMoveToTreeClick={this.onMoveToTreeClick}
+          onMoveToGridClick={this.onMoveToGridClick}
+        />
+        <Grid
+          grid={mergedGrid}
+          columns={gridColumns}
+          rowSelect
+          multiSelect
+          filtering
+          gridHeader={<Primitive.Subtitle>{mergedTranslations.gridTitle}</Primitive.Subtitle>}
+        />
+      </Container>
     );
   }
 }

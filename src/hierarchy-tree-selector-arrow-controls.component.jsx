@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import styled from 'styled-components';
+import {isSelectedTreeItemParent} from './hierarchy-tree.utils';
 // App imports
 import Arrow from './hierarchy-tree-selector-arrow.component';
 
@@ -12,14 +13,7 @@ const Controls = styled.div`
   justify-content: center;
 `;
 export default class HierarchyTreeSelectorArrowControls extends React.PureComponent {
-  /**
-   * Is selected item a parent (has a [childKey])
-   * @returns {boolean}
-   */
-  isSelectedTreeItemParent = () => {
-    const { childKey, selectedTreeItem } = this.props;
-    return selectedTreeItem ? !!selectedTreeItem[childKey] : false;
-  };
+
 
   /**
    * Is "move to tree" caret disabled. Button is disabled, if:
@@ -30,7 +24,7 @@ export default class HierarchyTreeSelectorArrowControls extends React.PureCompon
    */
   isMoveToTreeDisabled = () => {
     const { selectedGridItems, childKey, selectedTreeItem } = this.props;
-    return !this.isSelectedTreeItemParent() ||
+    return !isSelectedTreeItemParent(this.props) ||
       !selectedGridItems.size ||
       !!selectedTreeItem[childKey].find(childItem => childItem[childKey]);
   };
@@ -47,7 +41,7 @@ export default class HierarchyTreeSelectorArrowControls extends React.PureCompon
         <Arrow
           icon="CaretRight"
           onClick={onMoveToGridClick}
-          disabled={!selectedTreeItem || this.isSelectedTreeItemParent()}
+          disabled={!selectedTreeItem || isSelectedTreeItemParent(this.props)}
         />
       </Controls>
     );

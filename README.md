@@ -28,12 +28,12 @@ Also you need to configure sass loader, since all the styles are in sass format.
 ### Code example
 ```jsx
 import React from 'react';
-import { Example } from '@opuscapita/react-component-example';
+import HierarchyTree from '@opuscapita/react-hierarchy-tree';
 
-export default class ReactView extends React.Component {
+export default class TreeExample extends React.Component {
   render() {
     return (
-      <Example
+      <HierarchyTree
         propName="propValue"
       />
     );

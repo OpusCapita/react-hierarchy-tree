@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { DatagridActions } from '@opuscapita/react-grid';
-import styled, { ThemeProvider } from 'styled-components';
-import { theme } from '@opuscapita/oc-cm-common-layouts';
+import styled from 'styled-components';
 import { PropTypes } from 'prop-types';
+import { OCAlert } from '@opuscapita/react-alerts';
+
 // App imports
 import HierarchyTreeSelector from '../../src/index';
 import exampleTreeData from './treedata.json';
@@ -60,21 +61,28 @@ export default class ComponentView extends React.PureComponent {
     });
   };
 
+  onDragDropPrevent = () => {
+    OCAlert.alertError('I\'m afraid I cannot do that..', { timeOut: 3000 });
+  };
+
   render() {
     const { treeData } = this.state;
-    return (
-      <ThemeProvider theme={theme}>
-        <div style={{ padding: '20px' }}>
-          <HierarchySelector
-            onChange={this.onChange}
-            treeData={treeData}
-            grid={GRID}
-            gridColumns={GRID_COLUMNS}
-            defaultNewNodeName="New parent item"
-          />
-        </div>
-      </ThemeProvider>
+    const translations = {
+      gridTitle: 'Example persons',
+      treeTitle: 'Example hierarchy',
+      defaultNewNode: 'New parent item',
+    };
 
+    return (
+      <HierarchySelector
+        onChange={this.onChange}
+        treeData={treeData}
+        grid={GRID}
+        gridColumns={GRID_COLUMNS}
+        id="test-grid"
+        onDragDropPrevent={this.onDragDropPrevent}
+        translations={translations}
+      />
     );
   }
 }
