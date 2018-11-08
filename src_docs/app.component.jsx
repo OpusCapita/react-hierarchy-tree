@@ -29,6 +29,7 @@ const initialState = {
     locale: 'en',
     messages: {
       'Grid.ShowFilteringRow': 'Show filtering row',
+      'Grid.NoItems': 'No items',
     },
   },
 };

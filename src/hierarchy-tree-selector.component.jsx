@@ -53,6 +53,12 @@ const TreeContainer = styled.div`
   }
 `;
 
+const NoItemsText = styled.p`
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+`;
+
 const mapDispatchToProps = {
   setData: DatagridActions.setData,
   clearSelectedItems: DatagridActions.clearSelectedItems,
@@ -131,6 +137,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     };
     const newItems = this.getUpdatedTree(this.state.selectedKeys[0], treeData, action);
     onChange(newItems);
+    this.setState({ selectedKeys: [] });
   };
 
   /**
@@ -441,7 +448,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
             translations={mergedTranslations}
           />
           <PerfectScrollbar>
-            <TreeComponent
+            {!!treeData.length && <TreeComponent
               treeData={treeData}
               dataLookUpKey={idKey}
               dataLookUpValue={valueKey}
@@ -453,7 +460,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
               selectable
               draggable
               defaultExpandAll
-            />
+            />}
+            {!treeData.length && <NoItemsText>{mergedTranslations.noTreeItems}</NoItemsText>}
           </PerfectScrollbar>
         </TreeContainer>
         <ArrowControls

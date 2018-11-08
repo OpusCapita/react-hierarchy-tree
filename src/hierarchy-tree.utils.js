@@ -9,9 +9,10 @@ export const isSelectedTreeItemParent = (props) => {
 
 export const defaultTranslations = {
   add: 'Add level',
-  delete: 'Delete',
-  rename: 'Rename',
-  gridTitle: 'Grid',
-  treeTitle: 'Hierarchy',
   defaultNewNode: 'New node',
+  delete: 'Delete',
+  gridTitle: 'Grid',
+  noTreeItems: 'No tree items',
+  rename: 'Rename',
+  treeTitle: 'Hierarchy',
 };
