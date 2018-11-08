@@ -23,7 +23,13 @@ Also you need to configure sass loader, since all the styles are in sass format.
 ### API
 | Prop name                | Type             | Default                                  | Description                              |
 | ------------------------ | ---------------- | ---------------------------------------- | ---------------------------------------- |
-| propName                 | string           |                                          | Describe the prop here                   |
+| idKey                    | string           | 'id'                                     | Tree item's unique identifier property   |
+| valueKey                 | string           | 'name'                                   | Tree item's name property                |
+| childKey                 | string           | 'children'                               | Property where you'll find tree item's children |
+| treeData                 | array            | []                                       | Array of tree items |
+| onChange                 | func             | required                                 | onChange callback |
+| grid                     | gridShape        | required                                 | @opuscapita/react-grid. See documentation for details |
+| gridColumns              | gridColumnShape  | required                                 | @opuscapita/react-grid. See documentation for details |
 
 ### Code example
 ```jsx

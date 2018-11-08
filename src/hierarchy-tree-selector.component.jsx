@@ -177,7 +177,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       type: TREE_ACTIONS.MOVE_LEAF,
       data: this.state.selectedKeys[0],
     };
-    const nextSelectedKey = this.getPreviousItem(selectedKey);
+    const nextSelectedKey = this.getAdjacentItem(selectedKey);
     const newGridItems = fromJS([this.getTreeItem(selectedKey)]);
     const newItems = this.getUpdatedTree(selectedKey, treeData, action);
 
@@ -335,23 +335,23 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   /**
-   * Get previous item (id) in parent array. Used when moving items from tree
+   * Get adjacent item (id) in parent array. Used when moving items from tree
    * to grid
    * @param id
    * @returns {*}
    */
-  getPreviousItem = (id) => {
+  getAdjacentItem = (id) => {
     if (!id) return null;
     const { childKey, idKey } = this.props;
     const parent = this.getTreeItem(id, this.props.treeData, true);
 
     if (parent) {
       const index = parent[childKey].findIndex(child => child[idKey] === id);
-      const prevItem = parent[childKey][index - 1];
+      let adjacentItem = parent[childKey][index + 1];
+      if (!adjacentItem) adjacentItem = parent[childKey][index - 1];
+      if (!adjacentItem) return null;
 
-      if (!prevItem) return null;
-
-      return prevItem[idKey];
+      return adjacentItem[idKey];
     }
     return null;
   };
