@@ -9,6 +9,7 @@ import Arrow from './hierarchy-tree-selector-arrow.component';
 const Controls = styled.div`
   display: flex;
   max-width: 5rem;
+  min-width: 5rem;
   flex-direction: column;
   justify-content: center;
 `;

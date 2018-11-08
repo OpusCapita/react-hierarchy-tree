@@ -27,6 +27,9 @@ const composeEnhancers = (process.env.NODE_ENV !== 'production' &&
 const initialState = {
   intl: {
     locale: 'en',
+    messages: {
+      'Grid.ShowFilteringRow': 'Show filtering row',
+    },
   },
 };
 

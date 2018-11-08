@@ -7,10 +7,6 @@ import uuid from 'uuid';
 // App imports
 import { isSelectedTreeItemParent } from './hierarchy-tree.utils';
 
-const Title = styled(Primitive.Subtitle)`
-  flex: 1 1 100%;
-`;
-
 const RenameLabel = styled.label`
   margin: 0 ${props => props.theme.halfGutterWidth} 0 0;
 `;
@@ -29,6 +25,8 @@ const Button = styled(Primitive.Button)`
 const Controls = styled.div`
   display: flex;
   align-items: center;
+  margin-left: auto;
+  margin-right: 0;
 `;
 
 const RenameField = styled(Primitive.Input)`
@@ -96,7 +94,7 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 
     return (
       <Container height={height}>
-        <Title>{translations.treeTitle}</Title>
+        <Primitive.Subtitle>{translations.treeTitle}</Primitive.Subtitle>
         <Controls>
           <RenameLabel htmlFor={`${id}-node-name-input`}>{translations.rename}</RenameLabel>
           <RenameField

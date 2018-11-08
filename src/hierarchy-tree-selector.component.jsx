@@ -55,6 +55,7 @@ const TreeContainer = styled.div`
 
 const mapDispatchToProps = {
   setData: DatagridActions.setData,
+  clearSelectedItems: DatagridActions.clearSelectedItems,
 };
 
 const mapStateToProps = (state, props) => {
@@ -77,6 +78,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     gridColumns: PropTypes.arrayOf(gridColumnShape).isRequired,
     className: PropTypes.string,
     setData: PropTypes.func.isRequired,
+    clearSelectedItems: PropTypes.func.isRequired,
     selectedGridItems: ImmutablePropTypes.list.isRequired,
     gridData: ImmutablePropTypes.list.isRequired,
     translations: PropTypes.shape({}),
@@ -163,15 +165,20 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    */
   onMoveToGridClick = () => {
     const { treeData, onChange } = this.props;
+    const selectedKey = this.state.selectedKeys[0];
     const action = {
       type: TREE_ACTIONS.MOVE_LEAF,
       data: this.state.selectedKeys[0],
     };
-    const newGridItems = fromJS([this.getTreeItem(this.state.selectedKeys[0])]);
-    const newItems = this.getUpdatedTree(this.state.selectedKeys[0], treeData, action);
+    const nextSelectedKey = this.getPreviousItem(selectedKey);
+    const newGridItems = fromJS([this.getTreeItem(selectedKey)]);
+    const newItems = this.getUpdatedTree(selectedKey, treeData, action);
 
     this.setDataToGrid(newGridItems);
     onChange(newItems);
+    this.setState({
+      selectedKeys: [nextSelectedKey],
+    });
   };
 
   /**
@@ -321,6 +328,28 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   /**
+   * Get previous item (id) in parent array. Used when moving items from tree
+   * to grid
+   * @param id
+   * @returns {*}
+   */
+  getPreviousItem = (id) => {
+    if (!id) return null;
+    const { childKey, idKey } = this.props;
+    const parent = this.getTreeItem(id, this.props.treeData, true);
+
+    if (parent) {
+      const index = parent[childKey].findIndex(child => child[idKey] === id);
+      const prevItem = parent[childKey][index - 1];
+
+      if (!prevItem) return null;
+
+      return prevItem[idKey];
+    }
+    return null;
+  };
+
+  /**
    * Appends provided items to the grid
    * @param items - immutable array of items to be appended to grid
    * @param setNewItems - set completely a new array of items
@@ -330,7 +359,9 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     const { grid, gridColumns, gridData } = this.props;
     if (!setNewItems) data = gridData.slice();
     const newGridItems = data.concat(items);
+
     this.props.setData(grid, gridColumns, newGridItems);
+    this.props.clearSelectedItems(grid);
   };
 
   isDragDropLegal = (items, e) => {
@@ -437,6 +468,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
           rowSelect
           multiSelect
           filtering
+          rowSelectCheckboxColumn
           gridHeader={<Primitive.Subtitle>{mergedTranslations.gridTitle}</Primitive.Subtitle>}
         />
       </Container>
