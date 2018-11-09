@@ -132,12 +132,14 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    */
   onDeleteClick = () => {
     const { onChange, treeData } = this.props;
+    const selectedKey = this.state.selectedKeys[0];
     const action = {
       type: TREE_ACTIONS.DELETE_PARENT,
     };
-    const newItems = this.getUpdatedTree(this.state.selectedKeys[0], treeData, action);
+    const nextSelectedKey = this.getAdjacentItem(selectedKey);
+    const newItems = this.getUpdatedTree(selectedKey, treeData, action);
     onChange(newItems);
-    this.setState({ selectedKeys: [] });
+    this.setState({ selectedKeys: [nextSelectedKey] });
   };
 
   /**
@@ -342,18 +344,21 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    */
   getAdjacentItem = (id) => {
     if (!id) return null;
-    const { childKey, idKey } = this.props;
-    const parent = this.getTreeItem(id, this.props.treeData, true);
+    const { childKey, idKey, treeData } = this.props;
 
-    if (parent) {
-      const index = parent[childKey].findIndex(child => child[idKey] === id);
-      let adjacentItem = parent[childKey][index + 1];
-      if (!adjacentItem) adjacentItem = parent[childKey][index - 1];
+    const getAdjacentItemId = (parent) => {
+      const parentArr = Array.isArray(parent) ? parent : parent[childKey];
+      const index = parentArr.findIndex(child => child[idKey] === id);
+      let adjacentItem = parentArr[index + 1];
+      if (!adjacentItem) adjacentItem = parentArr[index - 1];
+      if (!adjacentItem && !Array.isArray(parent)) adjacentItem = parent;
       if (!adjacentItem) return null;
 
       return adjacentItem[idKey];
-    }
-    return null;
+    };
+
+    const parent = this.getTreeItem(id, this.props.treeData, true);
+    return parent ? getAdjacentItemId(parent) : getAdjacentItemId(treeData);
   };
 
   /**
