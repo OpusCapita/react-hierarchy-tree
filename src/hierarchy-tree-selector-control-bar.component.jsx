@@ -6,6 +6,7 @@ import uuid from 'uuid';
 
 // App imports
 import { isSelectedTreeItemParent } from './hierarchy-tree.utils';
+import ExpandAllToggle from './hierarchy-tree-selector-expand-all-toggle.component';
 
 const RenameLabel = styled.label`
   margin: 0 ${props => props.theme.halfGutterWidth} 0 0;
@@ -90,11 +91,12 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 
   render() {
     const {
-      translations, id, height,
+      translations, id, height, onExpandAllClick, expandAll,
     } = this.props;
 
     return (
       <Container height={height}>
+        <ExpandAllToggle expandAll={expandAll} onClick={onExpandAllClick} />
         <Primitive.Subtitle>{translations.treeTitle}</Primitive.Subtitle>
         <Controls>
           <RenameLabel htmlFor={`${id}-node-name-input`}>{translations.rename}</RenameLabel>
@@ -129,6 +131,7 @@ HierarchyTreeSelectorControlBar.propTypes = {
   onAddNewClick: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,
   onInputChange: PropTypes.func.isRequired,
+  onExpandAllClick: PropTypes.func.isRequired,
   idKey: PropTypes.string.isRequired,
   valueKey: PropTypes.string.isRequired,
   childKey: PropTypes.string.isRequired,
@@ -136,6 +139,7 @@ HierarchyTreeSelectorControlBar.propTypes = {
   selectedTreeItem: PropTypes.shape({}),
   id: PropTypes.string.isRequired,
   height: PropTypes.string.isRequired,
+  expandAll: PropTypes.bool.isRequired,
 };
 
 HierarchyTreeSelectorControlBar.defaultProps = {

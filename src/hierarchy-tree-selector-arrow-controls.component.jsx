@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import styled from 'styled-components';
-import {isSelectedTreeItemParent} from './hierarchy-tree.utils';
+import { FaChevronRight, FaChevronLeft } from 'react-icons/fa';
+import { Primitive } from '@opuscapita/oc-cm-common-layouts';
+
 // App imports
-import Arrow from './hierarchy-tree-selector-arrow.component';
+import { isSelectedTreeItemParent } from './hierarchy-tree.utils';
 
 const Controls = styled.div`
   display: flex;
@@ -13,9 +15,13 @@ const Controls = styled.div`
   flex-direction: column;
   justify-content: center;
 `;
+
+const Button = styled(Primitive.BorderlessButton)`
+  opacity: ${props => (props.disabled ? '0.5' : '1')};
+  font-size: 24px;
+`;
+
 export default class HierarchyTreeSelectorArrowControls extends React.PureComponent {
-
-
   /**
    * Is "move to tree" caret disabled. Button is disabled, if:
    *  - selected tree item is not a parent
@@ -34,16 +40,16 @@ export default class HierarchyTreeSelectorArrowControls extends React.PureCompon
     const { onMoveToGridClick, onMoveToTreeClick, selectedTreeItem } = this.props;
     return (
       <Controls>
-        <Arrow
-          icon="CaretLeft"
+        <Button
           onClick={onMoveToTreeClick}
           disabled={this.isMoveToTreeDisabled()}
-        />
-        <Arrow
-          icon="CaretRight"
+        ><FaChevronLeft />
+        </Button>
+        <Button
           onClick={onMoveToGridClick}
           disabled={!selectedTreeItem || isSelectedTreeItemParent(this.props)}
-        />
+        ><FaChevronRight />
+        </Button>
       </Controls>
     );
   }

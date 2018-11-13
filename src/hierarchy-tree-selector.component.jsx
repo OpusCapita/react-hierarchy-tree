@@ -118,7 +118,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
     let expandedKeys = [];
     if (props.defaultExpandAll && props.treeData) {
-      expandedKeys = this.getAllTreeIds(props.treeData);
+      expandedKeys = this.getAllParentIds(props.treeData);
     }
     this.state = {
       selectedKeys: [],
@@ -130,7 +130,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   componentDidMount() {
     const { defaultExpandAll } = this.props;
     if (defaultExpandAll) {
-      this.onExpand(this.getAllTreeIds());
+      console.log(this.getAllParentIds());
+      this.onExpand(this.getAllParentIds());
     }
   }
 
@@ -266,7 +267,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * Expand all the items
    */
   onExpandAll = () => {
-    console.log('expanding all');
+    const newExpandedItems = this.isAllExpanded() ? [] : this.getAllParentIds();
+    this.setState({ expandedKeys: newExpandedItems });
   };
 
   /**
@@ -409,11 +411,12 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * Returns all IDs in the tree
    * @param array
    */
-  getAllTreeIds = (array = this.props.treeData) => {
+  getAllParentIds = (array = this.props.treeData) => {
     const { idKey, childKey } = this.props;
     const cb = (acc, item) => {
-      const total = acc.concat(item[idKey]);
+      let total = acc;
       if (item[childKey] && item[childKey].length > 0) {
+        total = acc.concat(item[idKey]);
         return item[childKey].reduce(cb, total);
       }
       return total;
@@ -516,6 +519,9 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
 
+  isAllExpanded = () =>
+    this.state.expandedKeys.length === this.getAllParentIds().length;
+
   hasLeafs = (item) => {
     const { childKey } = this.props;
     if (!item[childKey]) return false;
@@ -553,6 +559,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
               onDeleteClick={this.onDeleteClick}
               onInputChange={this.onInputChange}
               onExpandAllClick={this.onExpandAll}
+              expandAll={this.isAllExpanded()}
               selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
               height={ACTION_BAR_CONTAINER_HEIGHT}
               translations={mergedTranslations}
