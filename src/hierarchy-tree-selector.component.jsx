@@ -1,13 +1,17 @@
-import React from 'react';
 import TreeComponent from '@opuscapita/react-treeview';
+import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
+import { Primitive } from '@opuscapita/oc-cm-common-layouts';
+import { Datagrid, gridShape, gridColumnShape, DatagridActions } from '@opuscapita/react-grid';
+import { ConfirmDialog } from '@opuscapita/react-confirmation-dialog';
+
+import React from 'react';
 import styled from 'styled-components';
 import { List, fromJS } from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { Datagrid, gridShape, gridColumnShape, DatagridActions } from '@opuscapita/react-grid';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
-import { Primitive } from '@opuscapita/oc-cm-common-layouts';
+
+
 // App imports
 import ControlBar from './hierarchy-tree-selector-control-bar.component';
 import ArrowControls from './hierarchy-tree-selector-arrow-controls.component';
@@ -79,7 +83,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     valueKey: PropTypes.string,
     childKey: PropTypes.string,
     treeData: PropTypes.arrayOf(PropTypes.shape({})),
-    onChange: PropTypes.func.isRequired,
     grid: gridShape.isRequired,
     gridColumns: PropTypes.arrayOf(gridColumnShape).isRequired,
     className: PropTypes.string,
@@ -89,7 +92,12 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     gridData: ImmutablePropTypes.list.isRequired,
     translations: PropTypes.shape({}),
     id: PropTypes.string,
+    defaultExpandAll: PropTypes.bool,
+
+    // Callbacks
     onDragDropPrevent: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
+    onSelect: PropTypes.func,
   };
 
   static defaultProps = {
@@ -101,13 +109,29 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     translations: defaultTranslations,
     id: 'hierarchy-tree',
     onDragDropPrevent: undefined,
+    onSelect: undefined,
+    defaultExpandAll: true,
   };
 
   constructor(props) {
     super(props);
+
+    let expandedKeys = [];
+    if (props.defaultExpandAll && props.treeData) {
+      expandedKeys = this.getAllTreeIds(props.treeData);
+    }
     this.state = {
       selectedKeys: [],
+      expandedKeys,
+      showDeleteConfirmation: false,
     };
+  }
+
+  componentDidMount() {
+    const { defaultExpandAll } = this.props;
+    if (defaultExpandAll) {
+      this.onExpand(this.getAllTreeIds());
+    }
   }
 
   /**
@@ -115,7 +139,10 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param selectedKeys (array)
    */
   onTreeItemSelect = (selectedKeys) => {
-    this.setState({ selectedKeys });
+    const { onSelect } = this.props;
+    this.setState({ selectedKeys }, () => {
+      if (onSelect) onSelect(selectedKeys);
+    });
   };
 
   /**
@@ -128,24 +155,18 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   /**
-   * Deletes a parent node
+   * Displays a confirmation dialog
    */
   onDeleteClick = () => {
-    const { onChange, treeData } = this.props;
-    const selectedKey = this.state.selectedKeys[0];
-    const action = {
-      type: TREE_ACTIONS.DELETE_PARENT,
-    };
-    const nextSelectedKey = this.getAdjacentItem(selectedKey);
-    const newItems = this.getUpdatedTree(selectedKey, treeData, action);
-    onChange(newItems);
-    this.setState({ selectedKeys: [nextSelectedKey] });
+    this.setState({ showDeleteConfirmation: true });
   };
+
 
   /**
    * Adds a new node to the root of the tree, or under a selected tree node using
    * ADD_CHILDREN action
-   * @param data
+   * @param data - data to be added
+   * @param callback
    */
   onAddNewClick = (data, callback) => {
     const { onChange, treeData, idKey } = this.props;
@@ -163,6 +184,10 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       newItems = this.getUpdatedTree(this.state.selectedKeys[0], treeData, action);
     }
     this.setState({ selectedKeys: [data[idKey]] }, () => {
+      // If the parent is not yet expanded, we will expand it now
+      const parent = this.getTreeItem(data[idKey], treeData, true) || {};
+      this.expandParent(parent[idKey]);
+
       onChange(newItems);
       callback();
     });
@@ -195,18 +220,20 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    */
   onMoveToTreeClick = () => {
     const {
-      onChange, selectedGridItems, gridData, treeData,
+      onChange, selectedGridItems, gridData, treeData, idKey,
     } = this.props;
+    const selectedId = this.state.selectedKeys[0];
 
     const action = {
       type: TREE_ACTIONS.ADD_CHILDREN,
       data: gridData
-        .filter(i => selectedGridItems.includes(i.get('id')))
+        .filter(i => selectedGridItems.includes(i.get(idKey)))
         .toJS(),
     };
-    const newItems = this.getUpdatedTree(this.state.selectedKeys[0], treeData, action);
-    const newGridItems = gridData.filter(item => !selectedGridItems.includes(item.get('id')));
+    const newItems = this.getUpdatedTree(selectedId, treeData, action);
+    const newGridItems = gridData.filter(item => !selectedGridItems.includes(item.get(idKey)));
 
+    this.expandParent(selectedId, true);
     this.setDataToGrid(newGridItems, true);
     onChange(newItems);
   };
@@ -223,6 +250,23 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     };
     const newItems = this.getUpdatedTree(this.state.selectedKeys[0], treeData, action);
     onChange(newItems);
+  };
+
+  /**
+   * Fired on expand
+   * @param ids
+   */
+  onExpand = (ids) => {
+    this.setState({
+      expandedKeys: ids,
+    });
+  };
+
+  /**
+   * Expand all the items
+   */
+  onExpandAll = () => {
+    console.log('expanding all');
   };
 
   /**
@@ -338,7 +382,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
   /**
    * Get adjacent item (id) in parent array. Used when moving items from tree
-   * to grid
+   * to grid/deleting an item
    * @param id
    * @returns {*}
    */
@@ -362,6 +406,22 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   /**
+   * Returns all IDs in the tree
+   * @param array
+   */
+  getAllTreeIds = (array = this.props.treeData) => {
+    const { idKey, childKey } = this.props;
+    const cb = (acc, item) => {
+      const total = acc.concat(item[idKey]);
+      if (item[childKey] && item[childKey].length > 0) {
+        return item[childKey].reduce(cb, total);
+      }
+      return total;
+    };
+    return array.reduce(cb, []);
+  };
+
+  /**
    * Appends provided items to the grid
    * @param items - immutable array of items to be appended to grid
    * @param setNewItems - set completely a new array of items
@@ -376,6 +436,49 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.props.clearSelectedItems(grid);
   };
 
+  /**
+   * Expands a parent
+   * @param parentId
+   */
+  expandParent = (parentId) => {
+    if (parentId && !this.state.expandedKeys.find(expandedId => expandedId === parentId)) {
+      const newExpandedKeys = this.state.expandedKeys.slice();
+      newExpandedKeys.push(parentId);
+      this.setState({ expandedKeys: newExpandedKeys });
+    }
+  };
+
+  /**
+   * Closes delete confirmation dialog
+   */
+  closeDeleteConfirmationDialog = () => {
+    this.setState({ showDeleteConfirmation: false });
+  };
+
+  /**
+   * Deletes a parent node
+   */
+  deleteParent = () => {
+    const { onChange, treeData } = this.props;
+    const selectedKey = this.state.selectedKeys[0];
+    const action = {
+      type: TREE_ACTIONS.DELETE_PARENT,
+    };
+    const nextSelectedKey = this.getAdjacentItem(selectedKey);
+    const newItems = this.getUpdatedTree(selectedKey, treeData, action);
+    onChange(newItems);
+    this.setState({
+      selectedKeys: [nextSelectedKey],
+      showDeleteConfirmation: false,
+    });
+  };
+
+  /**
+   * Checks if a move is permitted before calling Tree component's onDragDrop callback
+   * @param items
+   * @param e
+   * @returns {boolean}
+   */
   isDragDropLegal = (items, e) => {
     const { childKey, treeData, onDragDropPrevent } = this.props;
     const dropItem = this.getTreeItem(e.node.props.eventKey);
@@ -441,50 +544,65 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     const mergedTranslations = Object.assign({}, defaultTranslations, translations);
 
     return (
-      <Container className={className}>
-        <TreeContainer>
-          <ControlBar
+      <React.Fragment>
+        <Container className={className}>
+          <TreeContainer>
+            <ControlBar
+              {...this.props}
+              onAddNewClick={this.onAddNewClick}
+              onDeleteClick={this.onDeleteClick}
+              onInputChange={this.onInputChange}
+              onExpandAllClick={this.onExpandAll}
+              selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
+              height={ACTION_BAR_CONTAINER_HEIGHT}
+              translations={mergedTranslations}
+            />
+            <PerfectScrollbar>
+              {!!treeData.length && <TreeComponent
+                treeData={treeData}
+                dataLookUpKey={idKey}
+                dataLookUpValue={valueKey}
+                onSelect={this.onTreeItemSelect}
+                onDragDrop={this.onTreeItemDragDrop}
+                onExpand={this.onExpand}
+                checkable={false}
+                selectedKeys={this.state.selectedKeys}
+                expandedKeys={this.state.expandedKeys}
+                isDragDropLegal={this.isDragDropLegal}
+                selectable
+                draggable
+              />}
+              {!treeData.length && <NoItemsText>{mergedTranslations.noTreeItems}</NoItemsText>}
+            </PerfectScrollbar>
+          </TreeContainer>
+          <ArrowControls
             {...this.props}
-            onAddNewClick={this.onAddNewClick}
-            onDeleteClick={this.onDeleteClick}
-            onInputChange={this.onInputChange}
             selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
-            height={ACTION_BAR_CONTAINER_HEIGHT}
-            translations={mergedTranslations}
+            onMoveToTreeClick={this.onMoveToTreeClick}
+            onMoveToGridClick={this.onMoveToGridClick}
           />
-          <PerfectScrollbar>
-            {!!treeData.length && <TreeComponent
-              treeData={treeData}
-              dataLookUpKey={idKey}
-              dataLookUpValue={valueKey}
-              onSelect={this.onTreeItemSelect}
-              onDragDrop={this.onTreeItemDragDrop}
-              checkable={false}
-              selectedKeys={this.state.selectedKeys}
-              isDragDropLegal={this.isDragDropLegal}
-              selectable
-              draggable
-              defaultExpandAll
-            />}
-            {!treeData.length && <NoItemsText>{mergedTranslations.noTreeItems}</NoItemsText>}
-          </PerfectScrollbar>
-        </TreeContainer>
-        <ArrowControls
-          {...this.props}
-          selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
-          onMoveToTreeClick={this.onMoveToTreeClick}
-          onMoveToGridClick={this.onMoveToGridClick}
+          <Grid
+            grid={mergedGrid}
+            columns={gridColumns}
+            rowSelect
+            multiSelect
+            filtering
+            rowSelectCheckboxColumn
+            gridHeader={<Primitive.Subtitle>{mergedTranslations.gridTitle}</Primitive.Subtitle>}
+          />
+
+        </Container>
+        {this.state.showDeleteConfirmation &&
+        <ConfirmDialog
+          titleText={mergedTranslations.deleteConfirmDialog.titleText}
+          bodyText={mergedTranslations.deleteConfirmDialog.bodyText}
+          okButtonText={mergedTranslations.deleteConfirmDialog.okButtonText}
+          cancelButtonText={mergedTranslations.deleteConfirmDialog.cancelButtonText}
+          confirmCallback={this.deleteParent}
+          cancelCallback={this.closeDeleteConfirmationDialog}
         />
-        <Grid
-          grid={mergedGrid}
-          columns={gridColumns}
-          rowSelect
-          multiSelect
-          filtering
-          rowSelectCheckboxColumn
-          gridHeader={<Primitive.Subtitle>{mergedTranslations.gridTitle}</Primitive.Subtitle>}
-        />
-      </Container>
+        }
+      </React.Fragment>
     );
   }
 }

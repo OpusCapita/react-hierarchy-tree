@@ -15,4 +15,10 @@ export const defaultTranslations = {
   noTreeItems: 'No tree items',
   rename: 'Rename',
   treeTitle: 'Hierarchy',
+  deleteConfirmDialog: {
+    titleText: 'Delete',
+    bodyText: 'Do you want to delete this item?',
+    okButtonText: 'Delete',
+    cancelButtonText: 'Cancel',
+  },
 };

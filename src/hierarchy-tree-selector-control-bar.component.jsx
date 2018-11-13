@@ -42,7 +42,8 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 
   componentWillReceiveProps(nextProps) {
     if (this.props.selectedTreeItem !== nextProps.selectedTreeItem) {
-      const inputValue = nextProps.selectedTreeItem ?
+      const inputValue = nextProps.selectedTreeItem &&
+      isSelectedTreeItemParent(nextProps) ?
         nextProps.selectedTreeItem[nextProps.valueKey] : '';
       this.setState({ value: inputValue });
     }
