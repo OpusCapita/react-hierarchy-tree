@@ -27,7 +27,9 @@ const TREE_ACTIONS = {
 
 const Grid = styled(Datagrid)`
   height: 100%;
-  padding: 0;
+  &&& {
+    padding: 0;
+  }
   .oc-datagrid-main-container {
     border: 1px solid ${props => props.theme.colors.colorLightGray};
     border-top:none;
@@ -36,6 +38,7 @@ const Grid = styled(Datagrid)`
 
 const Container = styled.div`
   display: flex;
+  min-height: 300px;
   > div {
     width: 50%;
     flex: 1 1 100%;
