@@ -99,7 +99,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
     // Callbacks
     onDragDropPrevent: PropTypes.func,
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
     onSelect: PropTypes.func,
   };
 
@@ -113,6 +113,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     id: 'hierarchy-tree',
     onDragDropPrevent: undefined,
     onSelect: undefined,
+    onChange: undefined,
     defaultExpandAll: true,
   };
 
@@ -133,7 +134,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   componentDidMount() {
     const { defaultExpandAll } = this.props;
     if (defaultExpandAll) {
-      console.log(this.getAllParentIds());
       this.onExpand(this.getAllParentIds());
     }
   }
@@ -155,7 +155,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    */
   onTreeItemDragDrop = (items) => {
     const { onChange } = this.props;
-    onChange(items);
+    if (onChange) onChange(items);
   };
 
   /**
@@ -192,7 +192,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       const parent = this.getTreeItem(data[idKey], treeData, true) || {};
       this.expandParent(parent[idKey]);
 
-      onChange(newItems);
+      if (onChange) onChange(newItems);
       callback();
     });
   };
@@ -213,7 +213,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     const newItems = this.getUpdatedTree(selectedKey, treeData, action);
 
     this.setDataToGrid(newGridItems);
-    onChange(newItems);
+    if (onChange) onChange(newItems);
     this.setState({
       selectedKeys: [nextSelectedKey],
     });
@@ -239,7 +239,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
     this.expandParent(selectedId, true);
     this.setDataToGrid(newGridItems, true);
-    onChange(newItems);
+    if (onChange) onChange(newItems);
   };
 
   /**
@@ -253,7 +253,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       data: value,
     };
     const newItems = this.getUpdatedTree(this.state.selectedKeys[0], treeData, action);
-    onChange(newItems);
+    if (onChange) onChange(newItems);
   };
 
   /**
@@ -472,7 +472,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     };
     const nextSelectedKey = this.getAdjacentItem(selectedKey);
     const newItems = this.getUpdatedTree(selectedKey, treeData, action);
-    onChange(newItems);
+    if (onChange) onChange(newItems);
     this.setState({
       selectedKeys: [nextSelectedKey],
       showDeleteConfirmation: false,
