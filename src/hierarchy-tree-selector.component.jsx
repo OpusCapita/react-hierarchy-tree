@@ -1,4 +1,4 @@
-import TreeComponent from '@opuscapita/react-treeview';
+import TreeComponent from '@opuscapita/react-tree-component';
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 import { Primitive } from '@opuscapita/oc-cm-common-layouts';
 import { Datagrid, gridShape, gridColumnShape, DatagridActions } from '@opuscapita/react-grid';
