@@ -16,9 +16,9 @@ export const defaultTranslations = {
   rename: 'Rename',
   treeTitle: 'Hierarchy',
   deleteConfirmDialog: {
-    titleText: 'Delete',
-    bodyText: 'Do you want to delete this item?',
-    okButtonText: 'Delete',
-    cancelButtonText: 'Cancel',
+    title: 'Delete',
+    body: 'Do you want to delete this item?',
+    ok: 'Delete',
+    cancel: 'Cancel',
   },
 };

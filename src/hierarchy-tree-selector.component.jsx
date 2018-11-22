@@ -2,7 +2,7 @@ import TreeComponent from '@opuscapita/react-tree-component';
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 import { Primitive } from '@opuscapita/oc-cm-common-layouts';
 import { Datagrid, gridShape, gridColumnShape, DatagridActions } from '@opuscapita/react-grid';
-import { ConfirmDialog } from '@opuscapita/react-confirmation-dialog';
+import ConfirmDialog from '@opuscapita/react-confirmation-dialog';
 
 import React from 'react';
 import styled from 'styled-components';
@@ -604,10 +604,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
         </Container>
         {this.state.showDeleteConfirmation &&
         <ConfirmDialog
-          titleText={mergedTranslations.deleteConfirmDialog.titleText}
-          bodyText={mergedTranslations.deleteConfirmDialog.bodyText}
-          okButtonText={mergedTranslations.deleteConfirmDialog.okButtonText}
-          cancelButtonText={mergedTranslations.deleteConfirmDialog.cancelButtonText}
+          translations={mergedTranslations.deleteConfirmDialog}
           confirmCallback={this.deleteParent}
           cancelCallback={this.closeDeleteConfirmationDialog}
         />
