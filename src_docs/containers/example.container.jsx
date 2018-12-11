@@ -35,5 +35,4 @@ export default () => (
       <OCAlertsProvider />
     </Container>
   </ThemeProvider>
-
 );

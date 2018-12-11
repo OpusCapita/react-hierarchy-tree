@@ -48,9 +48,11 @@ const Container = styled.div`
 const TreeContainer = styled.div`
   height:100%;
   .oc-scrollbar-container {
-    border: 1px solid ${props => props.theme.colors.colorLightGray};
     height: calc(100% - ${ACTION_BAR_CONTAINER_HEIGHT});
     padding: ${props => props.theme.gutterWidth};
+  }
+  .title-container {
+    min-height: ${ACTION_BAR_CONTAINER_HEIGHT};
   }
   .oc-react-tree {
     height: 100%;
@@ -98,7 +100,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     defaultExpandAll: PropTypes.bool,
 
     // Callbacks
-    onDragDropPrevent: PropTypes.func,
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
   };
@@ -111,7 +112,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     className: '',
     translations: defaultTranslations,
     id: 'hierarchy-tree',
-    onDragDropPrevent: undefined,
     onSelect: undefined,
     onChange: undefined,
     defaultExpandAll: true,
@@ -120,23 +120,12 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    let expandedKeys = [];
-    if (props.defaultExpandAll && props.treeData) {
-      expandedKeys = this.getAllParentIds(props.treeData);
-    }
     this.state = {
       selectedKeys: [],
-      expandedKeys,
       showDeleteConfirmation: false,
     };
   }
 
-  componentDidMount() {
-    const { defaultExpandAll } = this.props;
-    if (defaultExpandAll) {
-      this.onExpand(this.getAllParentIds());
-    }
-  }
 
   /**
    * Selects a tree item
@@ -147,15 +136,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.setState({ selectedKeys }, () => {
       if (onSelect) onSelect(selectedKeys);
     });
-  };
-
-  /**
-   * Fired on drag n' drop
-   * @param items
-   */
-  onTreeItemDragDrop = (items) => {
-    const { onChange } = this.props;
-    if (onChange) onChange(items);
   };
 
   /**
@@ -220,6 +200,14 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   /**
+   * Calls onChange callback whenever user reorders tree items using ordering arrows
+   * @param items
+   */
+  onOrderClick = (items) => {
+    this.props.onChange(items);
+  };
+
+  /**
    * Adds selected grid items to the chosen tree node using ADD_CHILDREN action
    */
   onMoveToTreeClick = () => {
@@ -266,13 +254,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     });
   };
 
-  /**
-   * Expand all the items
-   */
-  onExpandAll = () => {
-    const newExpandedItems = this.isAllExpanded() ? [] : this.getAllParentIds();
-    this.setState({ expandedKeys: newExpandedItems });
-  };
 
   /**
    * Returns updated tree items.
@@ -427,6 +408,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     return array.reduce(cb, []);
   };
 
+
   /**
    * Appends provided items to the grid
    * @param items - immutable array of items to be appended to grid
@@ -480,69 +462,23 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   /**
-   * Checks if a move is permitted before calling Tree component's onDragDrop callback
-   * @param items
-   * @param e
-   * @returns {boolean}
-   */
-  isDragDropLegal = (items, e) => {
-    const { childKey, treeData, onDragDropPrevent } = this.props;
-    const dropItem = this.getTreeItem(e.node.props.eventKey);
-    const dragItem = this.getTreeItem(e.dragNode.props.eventKey);
-    const dropItemParent = this.getTreeItem(e.node.props.eventKey, treeData, true);
-
-    /**
-     * We want to prevent the move, if:
-     * - Selected item is a parent, and ..
-     *    - Dropping over an item, and ..
-     *      - New parent has leafs OR new parent is a leaf
-     *    - Dropping between items, and ..
-     *        - New parent's parent has leafs
-     *  - Selected item is a leaf, and ...
-     */
-    if (dragItem[childKey]) {
-      if (
-        (!e.dropToGap && (this.hasLeafs(dropItem) || !dropItem[childKey])) ||
-        (dropItemParent && e.dropToGap && (this.hasLeafs(dropItemParent)))
-      ) {
-        if (onDragDropPrevent) onDragDropPrevent();
-        return false;
-      }
-    } else if (
-      (dropItem && !e.dropToGap && this.hasParents(dropItem)) ||
-      (dropItemParent && e.dropToGap && this.hasParents(dropItemParent)) ||
-      (e.dropToGap && !dropItemParent) ||
-      (!e.dropToGap && !dropItem[childKey])
-    ) {
-      // Item has got parent as a child - leaf cannot be dropped here
-      if (onDragDropPrevent) onDragDropPrevent();
-      return false;
-    }
-    return true;
-  };
-
-
-  isAllExpanded = () =>
-    this.state.expandedKeys.length === this.getAllParentIds().length;
-
-  hasLeafs = (item) => {
-    const { childKey } = this.props;
-    if (!item[childKey]) return false;
-    return !!item[childKey].find(child => !child[childKey]);
-  };
-
-  hasParents = (item) => {
-    const { childKey } = this.props;
-    if (!item[childKey]) return false;
-    return !!item[childKey].find(child => child[childKey]);
-  };
-
-  /**
    * Deselects an item, if it is e.g. removed
    */
   deselectItem = () => {
     this.setState({ selectedKeys: [] });
   };
+
+  renderHeaderRight = translations => (
+    <ControlBar
+      {...this.props}
+      onAddNewClick={this.onAddNewClick}
+      onDeleteClick={this.onDeleteClick}
+      onInputChange={this.onInputChange}
+      selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
+      height={ACTION_BAR_CONTAINER_HEIGHT}
+      translations={translations}
+    />
+  );
 
   render() {
     const {
@@ -556,34 +492,22 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       <React.Fragment>
         <Container className={className}>
           <TreeContainer>
-            <ControlBar
-              {...this.props}
-              onAddNewClick={this.onAddNewClick}
-              onDeleteClick={this.onDeleteClick}
-              onInputChange={this.onInputChange}
-              onExpandAllClick={this.onExpandAll}
-              expandAll={this.isAllExpanded()}
-              selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
-              height={ACTION_BAR_CONTAINER_HEIGHT}
-              translations={mergedTranslations}
-            />
-            <PerfectScrollbar>
-              {!!treeData.length && <TreeComponent
-                treeData={treeData}
-                dataLookUpKey={idKey}
-                dataLookUpValue={valueKey}
-                onSelect={this.onTreeItemSelect}
-                onDragDrop={this.onTreeItemDragDrop}
-                onExpand={this.onExpand}
-                checkable={false}
-                selectedKeys={this.state.selectedKeys}
-                expandedKeys={this.state.expandedKeys}
-                isDragDropLegal={this.isDragDropLegal}
-                selectable
-                draggable
-              />}
-              {!treeData.length && <NoItemsText>{mergedTranslations.noTreeItems}</NoItemsText>}
-            </PerfectScrollbar>
+            {!!treeData.length && <TreeComponent
+              treeData={treeData}
+              dataLookUpKey={idKey}
+              dataLookUpValue={valueKey}
+              onSelect={this.onTreeItemSelect}
+              onExpand={this.onExpand}
+              checkable={false}
+              selectedKeys={this.state.selectedKeys}
+              expandedKeys={this.state.expandedKeys}
+              onOrderButtonClick={this.onOrderClick}
+              selectable
+              showOrderingArrows
+              showExpandAll
+              headerRight={this.renderHeaderRight(mergedTranslations)}
+            />}
+            {!treeData.length && <NoItemsText>{mergedTranslations.noTreeItems}</NoItemsText>}
           </TreeContainer>
           <ArrowControls
             {...this.props}
