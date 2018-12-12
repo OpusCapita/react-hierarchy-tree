@@ -1,16 +1,13 @@
 import TreeComponent from '@opuscapita/react-tree-component';
-import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 import { Primitive } from '@opuscapita/oc-cm-common-layouts';
 import { Datagrid, gridShape, gridColumnShape, DatagridActions } from '@opuscapita/react-grid';
 import ConfirmDialog from '@opuscapita/react-confirmation-dialog';
-
 import React from 'react';
 import styled from 'styled-components';
 import { List, fromJS } from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
 
 // App imports
 import ControlBar from './hierarchy-tree-selector-control-bar.component';
@@ -408,7 +405,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     return array.reduce(cb, []);
   };
 
-
   /**
    * Appends provided items to the grid
    * @param items - immutable array of items to be appended to grid
@@ -502,6 +498,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
               selectedKeys={this.state.selectedKeys}
               expandedKeys={this.state.expandedKeys}
               onOrderButtonClick={this.onOrderClick}
+              title={mergedTranslations.treeTitle}
               selectable
               showOrderingArrows
               showExpandAll
@@ -518,7 +515,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
           <Grid
             grid={mergedGrid}
             columns={gridColumns}
-            rowSelect
             multiSelect
             filtering
             rowSelectCheckboxColumn

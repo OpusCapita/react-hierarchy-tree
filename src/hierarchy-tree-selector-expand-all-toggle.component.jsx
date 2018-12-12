@@ -9,6 +9,7 @@ const Button = styled(Primitive.BorderlessButton)`
   font-size: 18px;
   align-items: center;
   display: flex;
+  line-height: 1;
 `;
 
 export default class HierarchyTreeSelectorExpandAllToggle extends React.PureComponent {

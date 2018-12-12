@@ -78,6 +78,14 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
   };
 
   /**
+   * Blur on enter key press
+   * @param e
+   */
+  onRenameFieldKeyDown = (e) => {
+    if (e.keyCode === 13) this.input.blur();
+  };
+
+  /**
    * Is add button disabled. Add button is disabled, if:
    * - selected tree node is a leaf
    * - contains leafs
@@ -109,6 +117,7 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
             innerRef={(input) => {
               this.input = input;
             }}
+            onKeyDown={this.onRenameFieldKeyDown}
           />
 
           <Button
