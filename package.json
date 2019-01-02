@@ -104,7 +104,7 @@
     "@opuscapita/oc-cm-common-layouts": "2.4.0",
     "@opuscapita/oc-cm-common-styles": "2.1.0",
     "@opuscapita/react-confirmation-dialog": "3.0.1",
-    "@opuscapita/react-grid": "6.2.1",
+    "@opuscapita/react-grid": "7.3.0",
     "@opuscapita/react-perfect-scrollbar": "3.0.3",
     "@opuscapita/react-tree-component": "2.1.0",
     "font-awesome": "4.7.0",

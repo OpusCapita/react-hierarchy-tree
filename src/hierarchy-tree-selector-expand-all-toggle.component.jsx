@@ -24,7 +24,6 @@ export default class HierarchyTreeSelectorExpandAllToggle extends React.PureComp
   render() {
     const { onClick, expandAll } = this.props;
     return (
-
       <Button onClick={onClick}>
         {expandAll ? <FaCaretDown /> : <FaCaretRight />}
       </Button>

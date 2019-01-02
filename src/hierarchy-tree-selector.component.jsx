@@ -29,7 +29,6 @@ const Grid = styled(Datagrid)`
   }
   .oc-datagrid-main-container {
     border: 1px solid ${props => props.theme.colors.colorLightGray};
-    border-top:none;
   }
 `;
 
@@ -386,23 +385,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
     const parent = this.getTreeItem(id, this.props.treeData, true);
     return parent ? getAdjacentItemId(parent) : getAdjacentItemId(treeData);
-  };
-
-  /**
-   * Returns all IDs in the tree
-   * @param array
-   */
-  getAllParentIds = (array = this.props.treeData) => {
-    const { idKey, childKey } = this.props;
-    const cb = (acc, item) => {
-      let total = acc;
-      if (item[childKey] && item[childKey].length > 0) {
-        total = acc.concat(item[idKey]);
-        return item[childKey].reduce(cb, total);
-      }
-      return total;
-    };
-    return array.reduce(cb, []);
   };
 
   /**
