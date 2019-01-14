@@ -7,6 +7,12 @@ export const isSelectedTreeItemParent = (props) => {
   return selectedTreeItem ? !!selectedTreeItem[childKey] : false;
 };
 
+export const isSelectedTreeItemRoot = (props) => {
+  const { selectedTreeItem, treeData, idKey } = props;
+  if (!selectedTreeItem) return false;
+  return treeData.find(item => item[idKey] === selectedTreeItem[idKey]);
+};
+
 export const defaultTranslations = {
   add: 'Add level',
   defaultNewNode: 'New node',

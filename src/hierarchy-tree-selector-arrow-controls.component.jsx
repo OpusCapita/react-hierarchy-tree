@@ -41,11 +41,13 @@ export default class HierarchyTreeSelectorArrowControls extends React.PureCompon
     return (
       <Controls>
         <Button
+          type="button"
           onClick={onMoveToTreeClick}
           disabled={this.isMoveToTreeDisabled()}
         ><FaChevronLeft />
         </Button>
         <Button
+          type="button"
           onClick={onMoveToGridClick}
           disabled={!selectedTreeItem || isSelectedTreeItemParent(this.props)}
         ><FaChevronRight />

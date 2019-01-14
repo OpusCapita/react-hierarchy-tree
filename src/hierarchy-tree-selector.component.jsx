@@ -27,9 +27,6 @@ const Grid = styled(Datagrid)`
   &&& {
     padding: 0;
   }
-  .oc-datagrid-main-container {
-    border: 1px solid ${props => props.theme.colors.colorLightGray};
-  }
 `;
 
 const Container = styled.div`
@@ -94,6 +91,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     translations: PropTypes.shape({}),
     id: PropTypes.string,
     defaultExpandAll: PropTypes.bool,
+    singleRoot: PropTypes.bool,
 
     // Callbacks
     onChange: PropTypes.func,
@@ -111,6 +109,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     onSelect: undefined,
     onChange: undefined,
     defaultExpandAll: true,
+    singleRoot: true,
   };
 
   constructor(props) {
@@ -502,7 +501,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
             rowSelectCheckboxColumn
             gridHeader={<Primitive.Subtitle>{mergedTranslations.gridTitle}</Primitive.Subtitle>}
           />
-
         </Container>
         {this.state.showDeleteConfirmation &&
         <ConfirmDialog

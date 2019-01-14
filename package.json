@@ -101,10 +101,10 @@
     "write-file-webpack-plugin": "4.3.2"
   },
   "dependencies": {
-    "@opuscapita/oc-cm-common-layouts": "2.4.0",
+    "@opuscapita/oc-cm-common-layouts": "2.5.3",
     "@opuscapita/oc-cm-common-styles": "2.1.0",
     "@opuscapita/react-confirmation-dialog": "3.0.1",
-    "@opuscapita/react-grid": "7.3.0",
+    "@opuscapita/react-grid": "7.3.1",
     "@opuscapita/react-perfect-scrollbar": "3.0.3",
     "@opuscapita/react-tree-component": "2.1.0",
     "font-awesome": "4.7.0",
@@ -113,7 +113,7 @@
     "react-redux": "5.0.7",
     "redux": "4.0.1",
     "redux-thunk": "2.3.0",
-    "styled-components": "3.3.3",
+    "styled-components": "4",
     "uuid": "3.3.2"
   },
   "repository": {

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import uuid from 'uuid';
 
 // App imports
-import { isSelectedTreeItemParent } from './hierarchy-tree.utils';
+import { isSelectedTreeItemParent, isSelectedTreeItemRoot } from './hierarchy-tree.utils';
 
 const RenameLabel = styled.label`
   margin: 0 ${props => props.theme.halfGutterWidth} 0 0;
@@ -66,9 +66,11 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
       [childKey]: [],
     }, () => {
       setTimeout(() => {
+        console.log('HERRE', this.input)
+
         this.input.select();
         this.input.focus();
-      }, 0);
+      }, 50);
     });
   };
 
@@ -93,11 +95,25 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
    */
   isAddDisabled = () => {
     const {
-      selectedTreeItem, childKey,
+      selectedTreeItem, childKey, singleRoot,
     } = this.props;
-    if (!selectedTreeItem) return false;
+
+    // If only a single root is allowed, we can't add new items if no items are selected
+    if (!selectedTreeItem) return singleRoot;
     return !isSelectedTreeItemParent(this.props) ||
       !!selectedTreeItem[childKey].find(childItem => !childItem[childKey]);
+  };
+
+  /**
+   * Is delete button disabled. Delete button is disabled, if:
+   * - single root is enabled and selected item is a root
+   * - selected item is a leaf
+   * @returns {boolean}
+   */
+  isDeleteDisabled = () => {
+    const { singleRoot } = this.props;
+    if (singleRoot && isSelectedTreeItemRoot(this.props)) return true;
+    return !isSelectedTreeItemParent(this.props);
   };
 
   render() {
@@ -114,7 +130,7 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
             id={`${id}-node-name-input`}
             value={this.state.value}
             disabled={!isSelectedTreeItemParent(this.props)}
-            innerRef={(input) => {
+            ref={(input) => {
               this.input = input;
             }}
             onKeyDown={this.onRenameFieldKeyDown}
@@ -123,12 +139,14 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
           <Button
             onClick={this.onAddButtonClick}
             disabled={this.isAddDisabled()}
+            type="button"
           >
             {translations.add}
           </Button>
           <Button
             onClick={this.onDeleteButtonClick}
-            disabled={!isSelectedTreeItemParent(this.props)}
+            disabled={this.isDeleteDisabled()}
+            type="button"
           >
             {translations.delete}
           </Button>
@@ -149,6 +167,7 @@ HierarchyTreeSelectorControlBar.propTypes = {
   selectedTreeItem: PropTypes.shape({}),
   id: PropTypes.string.isRequired,
   height: PropTypes.string.isRequired,
+  singleRoot: PropTypes.bool.isRequired,
 };
 
 HierarchyTreeSelectorControlBar.defaultProps = {
