@@ -106,7 +106,7 @@
     "@opuscapita/react-confirmation-dialog": "3.0.1",
     "@opuscapita/react-grid": "7.3.1",
     "@opuscapita/react-perfect-scrollbar": "3.0.3",
-    "@opuscapita/react-tree-component": "2.1.0",
+    "@opuscapita/react-tree-component": "2.1.1",
     "font-awesome": "4.7.0",
     "react-icons": "3.2.2",
     "react-immutable-proptypes": "2.1.0",

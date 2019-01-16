@@ -9,6 +9,7 @@ import { isSelectedTreeItemParent, isSelectedTreeItemRoot } from './hierarchy-tr
 
 const RenameLabel = styled.label`
   margin: 0 ${props => props.theme.halfGutterWidth} 0 0;
+  white-space: nowrap;
 `;
 
 const Container = styled.div`
@@ -31,6 +32,7 @@ const Controls = styled.div`
 
 const RenameField = styled(Primitive.Input)`
   min-width: 200px;
+  margin-right: 4rem;
 `;
 export default class HierarchyTreeSelectorControlBar extends React.PureComponent {
   constructor(props) {
@@ -112,8 +114,8 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
    */
   isDeleteDisabled = () => {
     const { singleRoot } = this.props;
-    if (singleRoot && isSelectedTreeItemRoot(this.props)) return true;
-    return !isSelectedTreeItemParent(this.props);
+    if (!this.props.selectedTreeItem) return true;
+    return !!(singleRoot && isSelectedTreeItemRoot(this.props));
   };
 
   render() {

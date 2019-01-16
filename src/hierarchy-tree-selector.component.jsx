@@ -14,7 +14,7 @@ import ControlBar from './hierarchy-tree-selector-control-bar.component';
 import ArrowControls from './hierarchy-tree-selector-arrow-controls.component';
 import { defaultTranslations } from './hierarchy-tree.utils';
 
-const ACTION_BAR_CONTAINER_HEIGHT = '57px';
+const ACTION_BAR_CONTAINER_HEIGHT = '54px';
 const TREE_ACTIONS = {
   ADD_CHILDREN: 'ADD_CHILDREN',
   MOVE_LEAF: 'MOVE_LEAF',
@@ -44,8 +44,11 @@ const TreeContainer = styled.div`
     height: calc(100% - ${ACTION_BAR_CONTAINER_HEIGHT});
     padding: ${props => props.theme.gutterWidth};
   }
-  .title-container {
+  .tree-header {
     min-height: ${ACTION_BAR_CONTAINER_HEIGHT};
+    .ordering-arrows {
+      font-weight: 24px;
+    }
   }
   .oc-react-tree {
     height: 100%;
@@ -137,6 +140,13 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * Displays a confirmation dialog
    */
   onDeleteClick = () => {
+    const { childKey } = this.props;
+
+    // If item is not a parent, we won't show the delete confirmation dialog
+    if (!this.getTreeItem(this.state.selectedKeys[0])[childKey]) {
+      this.moveItemToGrid();
+      return;
+    }
     this.setState({ showDeleteConfirmation: true });
   };
 
@@ -172,26 +182,9 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     });
   };
 
-  /**
-   * Removes the chosen item from a tree and updates the grid using MOVE_LEAF
-   * action
-   */
-  onMoveToGridClick = () => {
-    const { treeData, onChange } = this.props;
-    const selectedKey = this.state.selectedKeys[0];
-    const action = {
-      type: TREE_ACTIONS.MOVE_LEAF,
-      data: this.state.selectedKeys[0],
-    };
-    const nextSelectedKey = this.getAdjacentItem(selectedKey);
-    const newGridItems = fromJS([this.getTreeItem(selectedKey)]);
-    const newItems = this.getUpdatedTree(selectedKey, treeData, action);
 
-    this.setDataToGrid(newGridItems);
-    if (onChange) onChange(newItems);
-    this.setState({
-      selectedKeys: [nextSelectedKey],
-    });
+  onMoveToGridClick = () => {
+    this.moveItemToGrid();
   };
 
   /**
@@ -248,7 +241,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       expandedKeys: ids,
     });
   };
-
 
   /**
    * Returns updated tree items.
@@ -400,6 +392,29 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.props.setData(grid, gridColumns, newGridItems);
     this.props.clearSelectedItems(grid);
   };
+
+
+  /**
+   * Removes the chosen item from a tree and updates the grid using MOVE_LEAF
+   * action
+   */
+  moveItemToGrid = () => {
+    const { treeData, onChange } = this.props;
+    const selectedKey = this.state.selectedKeys[0];
+    const action = {
+      type: TREE_ACTIONS.MOVE_LEAF,
+      data: this.state.selectedKeys[0],
+    };
+    const nextSelectedKey = this.getAdjacentItem(selectedKey);
+    const newGridItems = fromJS([this.getTreeItem(selectedKey)]);
+    const newItems = this.getUpdatedTree(selectedKey, treeData, action);
+
+    this.setDataToGrid(newGridItems);
+    if (onChange) onChange(newItems);
+    this.setState({
+      selectedKeys: [nextSelectedKey],
+    });
+  }
 
   /**
    * Expands a parent

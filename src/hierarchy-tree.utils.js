@@ -19,7 +19,7 @@ export const defaultTranslations = {
   delete: 'Delete',
   gridTitle: 'Grid',
   noTreeItems: 'No tree items',
-  rename: 'Rename',
+  rename: 'Level name',
   treeTitle: 'Hierarchy',
   deleteConfirmDialog: {
     title: 'Delete',
