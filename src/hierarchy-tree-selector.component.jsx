@@ -499,6 +499,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
               showOrderingArrows
               showExpandAll
               headerRight={this.renderHeaderRight(mergedTranslations)}
+              handleExpandedKeysManually
             />}
             {!treeData.length && <NoItemsText>{mergedTranslations.noTreeItems}</NoItemsText>}
           </TreeContainer>

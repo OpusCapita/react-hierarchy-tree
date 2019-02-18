@@ -68,8 +68,6 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
       [childKey]: [],
     }, () => {
       setTimeout(() => {
-        console.log('HERRE', this.input)
-
         this.input.select();
         this.input.focus();
       }, 50);
