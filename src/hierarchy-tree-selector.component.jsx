@@ -117,13 +117,12 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
   constructor(props) {
     super(props);
-
     this.state = {
       selectedKeys: [],
+      expandedKeys: [],
       showDeleteConfirmation: false,
     };
   }
-
 
   /**
    * Selects a tree item
