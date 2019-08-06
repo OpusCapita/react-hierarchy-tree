@@ -39,7 +39,7 @@ const Container = styled.div`
 `;
 
 const TreeContainer = styled.div`
-  height:100%;
+  height: 100%;
   .oc-scrollbar-container {
     height: calc(100% - ${ACTION_BAR_CONTAINER_HEIGHT});
     padding: ${props => props.theme.gutterWidth};
@@ -53,7 +53,7 @@ const TreeContainer = styled.div`
   .oc-react-tree {
     height: 100%;
     .rc-tree-iconEle.rc-tree-icon__customize {
-        display:none;
+      display: none;
     }
   }
 `;
@@ -77,7 +77,10 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-@connect(mapStateToProps, mapDispatchToProps)
+@connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)
 export default class HierarchyTreeSelector extends React.PureComponent {
   static propTypes = {
     idKey: PropTypes.string,
@@ -149,7 +152,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.setState({ showDeleteConfirmation: true });
   };
 
-
   /**
    * Adds a new node to the root of the tree, or under a selected tree node using
    * ADD_CHILDREN action
@@ -181,7 +183,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     });
   };
 
-
   onMoveToGridClick = () => {
     this.moveItemToGrid();
   };
@@ -205,9 +206,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
     const action = {
       type: TREE_ACTIONS.ADD_CHILDREN,
-      data: gridData
-        .filter(i => selectedGridItems.includes(i.get(idKey)))
-        .toJS(),
+      data: gridData.filter(i => selectedGridItems.includes(i.get(idKey))).toJS(),
     };
     const newItems = this.getUpdatedTree(selectedId, treeData, action);
     const newGridItems = gridData.filter(item => !selectedGridItems.includes(item.get(idKey)));
@@ -392,7 +391,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.props.clearSelectedItems(grid);
   };
 
-
   /**
    * Removes the chosen item from a tree and updates the grid using MOVE_LEAF
    * action
@@ -413,7 +411,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.setState({
       selectedKeys: [nextSelectedKey],
     });
-  }
+  };
 
   /**
    * Expands a parent
@@ -473,9 +471,16 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
   render() {
     const {
-      valueKey, idKey, treeData, grid, gridColumns, className, translations,
+      valueKey,
+      idKey,
+      treeData,
+      grid,
+      gridColumns,
+      className,
+      translations,
+      childKey,
     } = this.props;
-
+    console.log(childKey);
     const mergedGrid = Object.assign({}, grid, { defaultShowFilteringRow: true });
     const mergedTranslations = Object.assign({}, defaultTranslations, translations);
 
@@ -483,23 +488,26 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       <React.Fragment>
         <Container className={className}>
           <TreeContainer>
-            {!!treeData.length && <TreeComponent
-              treeData={treeData}
-              dataLookUpKey={idKey}
-              dataLookUpValue={valueKey}
-              onSelect={this.onTreeItemSelect}
-              onExpand={this.onExpand}
-              checkable={false}
-              selectedKeys={this.state.selectedKeys}
-              expandedKeys={this.state.expandedKeys}
-              onOrderButtonClick={this.onOrderClick}
-              title={mergedTranslations.treeTitle}
-              selectable
-              showOrderingArrows
-              showExpandAll
-              headerRight={this.renderHeaderRight(mergedTranslations)}
-              handleExpandedKeysManually
-            />}
+            {!!treeData.length && (
+              <TreeComponent
+                treeData={treeData}
+                dataLookUpKey={idKey}
+                dataLookUpValue={valueKey}
+                dataLookUpChildren={childKey}
+                onSelect={this.onTreeItemSelect}
+                onExpand={this.onExpand}
+                checkable={false}
+                selectedKeys={this.state.selectedKeys}
+                expandedKeys={this.state.expandedKeys}
+                onOrderButtonClick={this.onOrderClick}
+                title={mergedTranslations.treeTitle}
+                selectable
+                showOrderingArrows
+                showExpandAll
+                headerRight={this.renderHeaderRight(mergedTranslations)}
+                handleExpandedKeysManually
+              />
+            )}
             {!treeData.length && <NoItemsText>{mergedTranslations.noTreeItems}</NoItemsText>}
           </TreeContainer>
           <ArrowControls
@@ -517,13 +525,13 @@ export default class HierarchyTreeSelector extends React.PureComponent {
             gridHeader={<Primitive.Subtitle>{mergedTranslations.gridTitle}</Primitive.Subtitle>}
           />
         </Container>
-        {this.state.showDeleteConfirmation &&
-        <ConfirmDialog
-          translations={mergedTranslations.deleteConfirmDialog}
-          confirmCallback={this.deleteParent}
-          cancelCallback={this.closeDeleteConfirmationDialog}
-        />
-        }
+        {this.state.showDeleteConfirmation && (
+          <ConfirmDialog
+            translations={mergedTranslations.deleteConfirmDialog}
+            confirmCallback={this.deleteParent}
+            cancelCallback={this.closeDeleteConfirmationDialog}
+          />
+        )}
       </React.Fragment>
     );
   }
