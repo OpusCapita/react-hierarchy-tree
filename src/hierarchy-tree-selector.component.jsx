@@ -480,7 +480,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       translations,
       childKey,
     } = this.props;
-    console.log(childKey);
+
     const mergedGrid = Object.assign({}, grid, { defaultShowFilteringRow: true });
     const mergedTranslations = Object.assign({}, defaultTranslations, translations);
 
