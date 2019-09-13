@@ -58,12 +58,6 @@ const TreeContainer = styled.div`
   }
 `;
 
-const NoItemsText = styled.p`
-  display: flex;
-  justify-content: center;
-  font-weight: bold;
-`;
-
 const mapDispatchToProps = {
   setData: DatagridActions.setData,
   clearSelectedItems: DatagridActions.clearSelectedItems,
@@ -488,27 +482,24 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       <React.Fragment>
         <Container className={className}>
           <TreeContainer>
-            {!!treeData.length && (
-              <TreeComponent
-                treeData={treeData}
-                dataLookUpKey={idKey}
-                dataLookUpValue={valueKey}
-                dataLookUpChildren={childKey}
-                onSelect={this.onTreeItemSelect}
-                onExpand={this.onExpand}
-                checkable={false}
-                selectedKeys={this.state.selectedKeys}
-                expandedKeys={this.state.expandedKeys}
-                onOrderButtonClick={this.onOrderClick}
-                title={mergedTranslations.treeTitle}
-                selectable
-                showOrderingArrows
-                showExpandAll
-                headerRight={this.renderHeaderRight(mergedTranslations)}
-                handleExpandedKeysManually
-              />
-            )}
-            {!treeData.length && <NoItemsText>{mergedTranslations.noTreeItems}</NoItemsText>}
+            <TreeComponent
+              treeData={treeData}
+              dataLookUpKey={idKey}
+              dataLookUpValue={valueKey}
+              dataLookUpChildren={childKey}
+              onSelect={this.onTreeItemSelect}
+              onExpand={this.onExpand}
+              checkable={false}
+              selectedKeys={this.state.selectedKeys}
+              expandedKeys={this.state.expandedKeys}
+              onOrderButtonClick={this.onOrderClick}
+              title={mergedTranslations.treeTitle}
+              selectable
+              showOrderingArrows
+              showExpandAll
+              headerRight={this.renderHeaderRight(mergedTranslations)}
+              handleExpandedKeysManually
+            />
           </TreeContainer>
           <ArrowControls
             {...this.props}
