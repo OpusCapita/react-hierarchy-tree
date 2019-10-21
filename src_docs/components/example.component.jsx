@@ -76,7 +76,7 @@ export default class ComponentView extends React.PureComponent {
     return (
       <HierarchySelector
         onChange={this.onChange}
-        treeData={[]}
+        treeData={treeData}
         grid={GRID}
         gridColumns={GRID_COLUMNS}
         id="test-grid"

@@ -27,7 +27,8 @@
       },
       {
         "id": "72ffb370-ec90-4746-a85f-5924f5e81ed4",
-        "name": "Parent 3",
+        "name": "Parent 3 (disabled)",
+        "disabled": true,
         "children": [
           {
             "id": "679b2660-4e19-4bfe-8733-b69670a903bb",
@@ -68,13 +69,15 @@
               },
               {
                 "id": "45945861-6b79-4112-8f14-a5283f103b65",
-                "name": "Yates",
-                "age": 28
+                "name": "Yates (disabled)",
+                "age": 28,
+                "disabled": true
               },
               {
                 "id": "5a188510-d5ee-4e30-923d-d26ad5385ae7",
-                "name": "Frieda",
-                "age": 16
+                "name": "Frieda (disabled)",
+                "age": 16,
+                "disabled": true
               }
             ]
           }

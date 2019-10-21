@@ -80,6 +80,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     idKey: PropTypes.string,
     valueKey: PropTypes.string,
     childKey: PropTypes.string,
+    disabledKey: PropTypes.string,
     treeData: PropTypes.arrayOf(PropTypes.shape({})),
     grid: gridShape.isRequired,
     gridColumns: PropTypes.arrayOf(gridColumnShape).isRequired,
@@ -102,6 +103,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     idKey: 'id',
     valueKey: 'name',
     childKey: 'children',
+    disabledKey: 'disabled',
     treeData: [],
     className: '',
     translations: defaultTranslations,
@@ -126,7 +128,9 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param selectedKeys (array)
    */
   onTreeItemSelect = (selectedKeys) => {
-    const { onSelect } = this.props;
+    const { onSelect, disabledKey } = this.props;
+    const selectedItem = this.getTreeItem(selectedKeys[0]);
+    if (selectedItem && selectedItem[disabledKey]) return;
     this.setState({ selectedKeys }, () => {
       if (onSelect) onSelect(selectedKeys);
     });
@@ -136,6 +140,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * Displays a confirmation dialog
    */
   onDeleteClick = () => {
+    if (this.isSelectedDisabled()) return;
+
     const { childKey } = this.props;
 
     // If item is not a parent, we won't show the delete confirmation dialog
@@ -153,6 +159,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param callback
    */
   onAddNewClick = (data, callback) => {
+    if (this.isSelectedDisabled()) return;
+
     const { onChange, treeData, idKey } = this.props;
     let newItems = treeData.slice();
 
@@ -178,6 +186,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   onMoveToGridClick = () => {
+    if (this.isSelectedDisabled()) return;
     this.moveItemToGrid();
   };
 
@@ -186,6 +195,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param items
    */
   onOrderClick = (items) => {
+    if (this.isSelectedDisabled()) return;
     this.props.onChange(items);
   };
 
@@ -197,6 +207,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       onChange, selectedGridItems, gridData, treeData, idKey,
     } = this.props;
     const selectedId = this.state.selectedKeys[0];
+
+    if (this.isSelectedDisabled()) return;
 
     const action = {
       type: TREE_ACTIONS.ADD_CHILDREN,
@@ -215,6 +227,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param value
    */
   onInputChange = (value) => {
+    if (this.isSelectedDisabled()) return;
+
     const { treeData, onChange } = this.props;
     const action = {
       type: TREE_ACTIONS.RENAME_PARENT,
@@ -242,6 +256,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @returns {*}
    */
   getUpdatedTree = (id, array = this.props.treeData, action) => {
+    if (this.isSelectedDisabled()) return array;
+
     let found = false;
     const { idKey, childKey, valueKey } = this.props;
     const newItems = array.slice();
@@ -383,6 +399,14 @@ export default class HierarchyTreeSelector extends React.PureComponent {
 
     this.props.setData(grid, gridColumns, newGridItems);
     this.props.clearSelectedItems(grid);
+  };
+
+  /**
+   * Checks whether or not given node is disabled
+   */
+  isSelectedDisabled = () => {
+    const { disabledKey } = this.props;
+    return !!this.getTreeItem(this.state.selectedKeys[0])[disabledKey];
   };
 
   /**

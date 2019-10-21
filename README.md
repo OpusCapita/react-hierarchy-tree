@@ -26,6 +26,7 @@ Also you need to configure sass loader, since all the styles are in sass format.
 | idKey                    | string           | 'id'                                     | Tree item's unique identifier property   |
 | valueKey                 | string           | 'name'                                   | Tree item's name property                |
 | childKey                 | string           | 'children'                               | Property where you'll find tree item's children |
+| disabledKey              | string           | 'disabled'                               | Property that tells whether node is disabled or not |
 | treeData                 | array            | []                                       | Array of tree items |
 | onChange                 | func             | required                                 | onChange callback |
 | grid                     | gridShape        | required                                 | @opuscapita/react-grid. See documentation for details |
