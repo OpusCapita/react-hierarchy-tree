@@ -81,6 +81,7 @@ export default class ComponentView extends React.PureComponent {
         gridColumns={GRID_COLUMNS}
         id="test-grid"
         onPreventDelete={this.onPreventDelete}
+        lockedKey="disabled"
         translations={translations}
       />
     );

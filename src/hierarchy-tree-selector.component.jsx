@@ -104,7 +104,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     idKey: 'id',
     valueKey: 'name',
     childKey: 'children',
-    lockedKey: 'disabled',
+    lockedKey: undefined,
     treeData: [],
     className: '',
     translations: defaultTranslations,
@@ -130,10 +130,9 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param selectedKeys (array)
    */
   onTreeItemSelect = (selectedKeys) => {
-    if (this.isSelectedDisabled()) return;
     const { onSelect, lockedKey } = this.props;
     const selectedItem = this.getTreeItem(selectedKeys[0]);
-    if (selectedItem && selectedItem[lockedKey]) return;
+    if (lockedKey && selectedItem && selectedItem[lockedKey]) return;
     this.setState({ selectedKeys }, () => {
       if (onSelect) onSelect(selectedKeys);
     });
@@ -150,11 +149,14 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       this.moveItemToGrid();
       return;
     }
-    // If it is a parent, we want to check that it doesn't contain any locked items
-    const leafs = this.getAllLeafs(item[childKey]);
-    if (leafs.find(leaf => leaf[lockedKey]) && onPreventDelete) {
-      onPreventDelete();
-      return;
+
+    if (lockedKey) {
+      // If it is a parent, we want to check that it doesn't contain any locked items
+      const leafs = this.getAllLeafs(item[childKey]);
+      if (leafs.find(leaf => leaf[lockedKey]) && onPreventDelete) {
+        onPreventDelete();
+        return;
+      }
     }
 
     this.setState({ showDeleteConfirmation: true });
