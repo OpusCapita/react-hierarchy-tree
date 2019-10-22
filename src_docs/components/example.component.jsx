@@ -61,8 +61,8 @@ export default class ComponentView extends React.PureComponent {
     });
   };
 
-  onDragDropPrevent = () => {
-    OCAlert.alertError('I\'m afraid I cannot do that..', { timeOut: 3000 });
+  onPreventDelete = () => {
+    OCAlert.alertError('This item cannot be deleted, because it contains locked items', { timeOut: 3000 });
   };
 
   render() {
@@ -80,7 +80,7 @@ export default class ComponentView extends React.PureComponent {
         grid={GRID}
         gridColumns={GRID_COLUMNS}
         id="test-grid"
-        onDragDropPrevent={this.onDragDropPrevent}
+        onPreventDelete={this.onPreventDelete}
         translations={translations}
       />
     );

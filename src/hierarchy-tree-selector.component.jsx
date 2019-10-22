@@ -80,7 +80,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     idKey: PropTypes.string,
     valueKey: PropTypes.string,
     childKey: PropTypes.string,
-    disabledKey: PropTypes.string,
+    lockedKey: PropTypes.string,
     treeData: PropTypes.arrayOf(PropTypes.shape({})),
     grid: gridShape.isRequired,
     gridColumns: PropTypes.arrayOf(gridColumnShape).isRequired,
@@ -97,19 +97,21 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     // Callbacks
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
+    onPreventDelete: PropTypes.func,
   };
 
   static defaultProps = {
     idKey: 'id',
     valueKey: 'name',
     childKey: 'children',
-    disabledKey: 'disabled',
+    lockedKey: 'disabled',
     treeData: [],
     className: '',
     translations: defaultTranslations,
     id: 'hierarchy-tree',
     onSelect: undefined,
     onChange: undefined,
+    onPreventDelete: undefined,
     defaultExpandAll: true,
     singleRoot: true,
   };
@@ -128,9 +130,10 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param selectedKeys (array)
    */
   onTreeItemSelect = (selectedKeys) => {
-    const { onSelect, disabledKey } = this.props;
+    if (this.isSelectedDisabled()) return;
+    const { onSelect, lockedKey } = this.props;
     const selectedItem = this.getTreeItem(selectedKeys[0]);
-    if (selectedItem && selectedItem[disabledKey]) return;
+    if (selectedItem && selectedItem[lockedKey]) return;
     this.setState({ selectedKeys }, () => {
       if (onSelect) onSelect(selectedKeys);
     });
@@ -140,15 +143,20 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * Displays a confirmation dialog
    */
   onDeleteClick = () => {
-    if (this.isSelectedDisabled()) return;
-
-    const { childKey } = this.props;
-
+    const { childKey, lockedKey, onPreventDelete } = this.props;
+    const item = this.getTreeItem(this.state.selectedKeys[0]);
     // If item is not a parent, we won't show the delete confirmation dialog
-    if (!this.getTreeItem(this.state.selectedKeys[0])[childKey]) {
+    if (!item[childKey]) {
       this.moveItemToGrid();
       return;
     }
+    // If it is a parent, we want to check that it doesn't contain any locked items
+    const leafs = this.getAllLeafs(item[childKey]);
+    if (leafs.find(leaf => leaf[lockedKey]) && onPreventDelete) {
+      onPreventDelete();
+      return;
+    }
+
     this.setState({ showDeleteConfirmation: true });
   };
 
@@ -159,8 +167,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param callback
    */
   onAddNewClick = (data, callback) => {
-    if (this.isSelectedDisabled()) return;
-
     const { onChange, treeData, idKey } = this.props;
     let newItems = treeData.slice();
 
@@ -186,7 +192,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   onMoveToGridClick = () => {
-    if (this.isSelectedDisabled()) return;
     this.moveItemToGrid();
   };
 
@@ -195,7 +200,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param items
    */
   onOrderClick = (items) => {
-    if (this.isSelectedDisabled()) return;
     this.props.onChange(items);
   };
 
@@ -207,8 +211,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       onChange, selectedGridItems, gridData, treeData, idKey,
     } = this.props;
     const selectedId = this.state.selectedKeys[0];
-
-    if (this.isSelectedDisabled()) return;
 
     const action = {
       type: TREE_ACTIONS.ADD_CHILDREN,
@@ -227,8 +229,6 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * @param value
    */
   onInputChange = (value) => {
-    if (this.isSelectedDisabled()) return;
-
     const { treeData, onChange } = this.props;
     const action = {
       type: TREE_ACTIONS.RENAME_PARENT,
@@ -405,8 +405,10 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    * Checks whether or not given node is disabled
    */
   isSelectedDisabled = () => {
-    const { disabledKey } = this.props;
-    return !!this.getTreeItem(this.state.selectedKeys[0])[disabledKey];
+    const { lockedKey } = this.props;
+    const item = !!this.getTreeItem(this.state.selectedKeys[0]);
+    if (!item) return false;
+    return item[lockedKey];
   };
 
   /**
