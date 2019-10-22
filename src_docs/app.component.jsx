@@ -21,8 +21,8 @@ import './app.component.scss';
 import './images/favicon.ico';
 
 
-const composeEnhancers = (process.env.NODE_ENV !== 'production' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
+const composeEnhancers = (process.env.NODE_ENV !== 'production'
+&& window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
 const initialState = {
   intl: {

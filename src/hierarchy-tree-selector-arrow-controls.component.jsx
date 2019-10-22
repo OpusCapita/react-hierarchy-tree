@@ -31,9 +31,9 @@ export default class HierarchyTreeSelectorArrowControls extends React.PureCompon
    */
   isMoveToTreeDisabled = () => {
     const { selectedGridItems, childKey, selectedTreeItem } = this.props;
-    return !isSelectedTreeItemParent(this.props) ||
-      !selectedGridItems.size ||
-      !!selectedTreeItem[childKey].find(childItem => childItem[childKey]);
+    return !isSelectedTreeItemParent(this.props)
+    || !selectedGridItems.size
+    || !!selectedTreeItem[childKey].find(childItem => childItem[childKey]);
   };
 
   render() {
@@ -44,13 +44,15 @@ export default class HierarchyTreeSelectorArrowControls extends React.PureCompon
           type="button"
           onClick={onMoveToTreeClick}
           disabled={this.isMoveToTreeDisabled()}
-        ><FaChevronLeft />
+        >
+          <FaChevronLeft />
         </Button>
         <Button
           type="button"
           onClick={onMoveToGridClick}
           disabled={!selectedTreeItem || isSelectedTreeItemParent(this.props)}
-        ><FaChevronRight />
+        >
+          <FaChevronRight />
         </Button>
       </Controls>
     );
@@ -68,4 +70,3 @@ HierarchyTreeSelectorArrowControls.propTypes = {
 HierarchyTreeSelectorArrowControls.defaultProps = {
   selectedTreeItem: null,
 };
-

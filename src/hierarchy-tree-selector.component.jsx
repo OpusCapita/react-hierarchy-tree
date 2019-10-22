@@ -1,6 +1,8 @@
 import TreeComponent from '@opuscapita/react-tree-component';
 import { Primitive } from '@opuscapita/oc-cm-common-layouts';
-import { Datagrid, gridShape, gridColumnShape, DatagridActions } from '@opuscapita/react-grid';
+import {
+  Datagrid, gridShape, gridColumnShape, DatagridActions,
+} from '@opuscapita/react-grid';
 import ConfirmDialog from '@opuscapita/react-confirmation-dialog';
 import React from 'react';
 import styled from 'styled-components';
@@ -441,7 +443,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    */
   expandParent = (parentId) => {
     if (parentId && !this.state.expandedKeys.find(expandedId => expandedId === parentId)) {
-      const newExpandedKeys = this.state.expandedKeys.slice();
+      const newExpandedKeys = this.state.expandedKeys.slice(); // eslint-disable-line
       newExpandedKeys.push(parentId);
       this.setState({ expandedKeys: newExpandedKeys });
     }

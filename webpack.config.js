@@ -1,12 +1,12 @@
 const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
-const WebpackNotifierPlugin = require('webpack-notifier');
 const autoprefixer = require('autoprefixer');
 const precss = require('precss');
 const flexbugs = require('postcss-flexbugs-fixes');
+const packageConfig = require('./package.json');
 
-const libraryName = 'react-hierarchy-tree';
+const libraryName = packageConfig.name.replace('@opuscapita/', '');
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -43,33 +43,19 @@ const baseConfig = {
         ],
       },
       {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              minimize: !!isProd,
-            },
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: () => [flexbugs, precss, autoprefixer],
-            },
-          },
-        ],
+        test: /\.svg$/,
+        use: [{
+          loader: 'babel-loader',
+        },
+        {
+          loader: 'react-svg-loader',
+        }],
       },
       {
-        test: /\.scss$/,
+        test: /\.(sa|sc|c)ss$/,
         use: [
           'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              minimize: !!isProd,
-            },
-          },
+          'css-loader',
           {
             loader: 'postcss-loader',
             options: {
@@ -80,25 +66,9 @@ const baseConfig = {
         ],
       },
       {
-        test: /\.svg$/,
-        exclude: path.resolve(__dirname, 'node_modules', 'font-awesome'),
-        use: ['babel-loader', 'react-svg-loader'],
-      },
-      {
-        test: /\.svg$/,
-        include: path.resolve(__dirname, 'node_modules', 'font-awesome'),
-        use: [{
-          loader: 'file-loader',
-          options: {
-            name: '[name].[ext]',
-            outputPath: 'fonts/',
-          },
-        }],
-      },
-      {
         test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
         use: [{
-          loader: 'url-loader',
+          loader: 'file-loader',
           options: {
             name: '[name].[ext]',
             outputPath: 'fonts/',
@@ -110,7 +80,7 @@ const baseConfig = {
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
         use: [{
-          loader: 'url-loader',
+          loader: 'file-loader',
           options: {
             name: '[name].[ext]',
             outputPath: 'fonts/',
@@ -174,6 +144,7 @@ const baseConfig = {
 * DEVELOPMENT CONFIG
 */
 const devConfig = {
+  mode: 'development',
   devtool: 'eval-source-map',
   plugins: [
     new webpack.DefinePlugin({
@@ -181,8 +152,6 @@ const devConfig = {
         NODE_ENV: JSON.stringify('development'),
       },
     }),
-    new WebpackNotifierPlugin(),
-    new webpack.NamedModulesPlugin(),
   ],
 };
 
@@ -190,18 +159,12 @@ const devConfig = {
 * PRODUCTION CONFIG
 */
 const prodConfig = {
-  devtool: 'source-map',
+  mode: 'production',
+  devtool: false,
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production'),
-      },
-    }),
-    new webpack.optimize.ModuleConcatenationPlugin(),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      output: {
-        comments: false,
       },
     }),
   ],

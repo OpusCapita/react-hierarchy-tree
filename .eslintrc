@@ -8,7 +8,8 @@
     "ecmaVersion": 6,
     "sourceType": "module",
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true,
+      "legacyDecorators": true
     }
   },
   "globals": {
@@ -35,6 +36,9 @@
       "devDependencies": true,
       "optionalDependencies": true,
       "peerDependencies": true}],
-    "react/prefer-stateless-function": "off"
+    "react/prefer-stateless-function": "off",
+    "react/destructuring-assignment": "off",
+    "import/no-named-as-default-member": "off",
+    "import/no-named-as-default": "off"
   }
 }

@@ -44,9 +44,9 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 
   componentWillReceiveProps(nextProps) {
     if (this.props.selectedTreeItem !== nextProps.selectedTreeItem) {
-      const inputValue = nextProps.selectedTreeItem &&
-      isSelectedTreeItemParent(nextProps) ?
-        nextProps.selectedTreeItem[nextProps.valueKey] : '';
+      const inputValue = nextProps.selectedTreeItem
+      && isSelectedTreeItemParent(nextProps)
+        ? nextProps.selectedTreeItem[nextProps.valueKey] : '';
       this.setState({ value: inputValue });
     }
   }
@@ -100,8 +100,8 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 
     // If only a single root is allowed, we can't add new items if no items are selected
     if (!selectedTreeItem) return singleRoot;
-    return !isSelectedTreeItemParent(this.props) ||
-      !!selectedTreeItem[childKey].find(childItem => !childItem[childKey]);
+    return !isSelectedTreeItemParent(this.props)
+    || !!selectedTreeItem[childKey].find(childItem => !childItem[childKey]);
   };
 
   /**
@@ -163,7 +163,12 @@ HierarchyTreeSelectorControlBar.propTypes = {
   idKey: PropTypes.string.isRequired,
   valueKey: PropTypes.string.isRequired,
   childKey: PropTypes.string.isRequired,
-  translations: PropTypes.shape({}).isRequired,
+  translations: PropTypes.shape({
+    add: PropTypes.string,
+    delete: PropTypes.string,
+    rename: PropTypes.string,
+    defaultNewNode: PropTypes.string,
+  }).isRequired,
   selectedTreeItem: PropTypes.shape({}),
   id: PropTypes.string.isRequired,
   height: PropTypes.string.isRequired,
@@ -173,4 +178,3 @@ HierarchyTreeSelectorControlBar.propTypes = {
 HierarchyTreeSelectorControlBar.defaultProps = {
   selectedTreeItem: null,
 };
-

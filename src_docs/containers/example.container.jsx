@@ -1,7 +1,6 @@
 import React from 'react';
 import { Primitive, theme } from '@opuscapita/oc-cm-common-layouts';
 import styled, { ThemeProvider } from 'styled-components';
-import { OCAlertsProvider } from '@opuscapita/react-alerts';
 // app imports
 import ExampleComponent from '../components/example.component';
 import GithubLogo from '../images/logo-github.svg';
@@ -32,7 +31,6 @@ export default () => (
       <Panel>
         <ExampleComponent />
       </Panel>
-      <OCAlertsProvider />
     </Container>
   </ThemeProvider>
 );

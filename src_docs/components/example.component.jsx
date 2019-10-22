@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { DatagridActions } from '@opuscapita/react-grid';
 import styled from 'styled-components';
 import { PropTypes } from 'prop-types';
-import { OCAlert } from '@opuscapita/react-alerts';
 
 // App imports
 import HierarchyTreeSelector from '../../src/index';
@@ -62,7 +61,7 @@ export default class ComponentView extends React.PureComponent {
   };
 
   onPreventDelete = () => {
-    OCAlert.alertError('This item cannot be deleted, because it contains locked items', { timeOut: 3000 });
+    alert('This item cannot be deleted, because it contains locked items', { timeOut: 3000 }); // eslint-disable-line
   };
 
   render() {
