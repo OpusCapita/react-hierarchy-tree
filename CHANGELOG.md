@@ -4,6 +4,9 @@
 
 ## <next>
 
+## 0.0.3
+* Added defaultExpandedKeys property
+
 ## 0.0.2
 * Added babel-polyfill for DEMO
 * Updated dev packages

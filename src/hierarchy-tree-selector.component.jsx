@@ -94,8 +94,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     translations: PropTypes.shape({}),
     id: PropTypes.string,
     defaultExpandAll: PropTypes.bool,
+    defaultExpandedKeys: PropTypes.arrayOf(PropTypes.string),
     singleRoot: PropTypes.bool,
-
     // Callbacks
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
@@ -115,6 +115,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     onChange: undefined,
     onPreventDelete: undefined,
     defaultExpandAll: true,
+    defaultExpandedKeys: [],
     singleRoot: true,
   };
 
@@ -122,7 +123,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     super(props);
     this.state = {
       selectedKeys: [],
-      expandedKeys: [],
+      expandedKeys: props.defaultExpandedKeys,
       showDeleteConfirmation: false,
     };
   }

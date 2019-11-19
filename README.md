@@ -26,6 +26,7 @@ Also you need to configure sass loader, since all the styles are in sass format.
 | idKey                    | string           | 'id'                                     | Tree item's unique identifier property   |
 | valueKey                 | string           | 'name'                                   | Tree item's name property                |
 | childKey                 | string           | 'children'                               | Property where you'll find tree item's children |
+| defaultExpandedKeys      | array            | []                                       | Array of items that are expanded by default (ids).  |
 | lockedKey                | string           | undefined                                | Property that tells whether node or it's parents can be deleted, moved, etc. |
 | treeData                 | array            | []                                       | Array of tree items |
 | onChange                 | func             | required                                 | onChange callback |
