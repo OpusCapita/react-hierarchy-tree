@@ -120,7 +120,7 @@
     "@opuscapita/react-confirmation-dialog": "3.0.2",
     "@opuscapita/react-grid": "8.5.0",
     "@opuscapita/react-perfect-scrollbar": "3.0.4",
-    "@opuscapita/react-tree-component": "2.3.2",
+    "@opuscapita/react-tree-component": "2.3.3",
     "babel-preset-es2015": "6.24.1",
     "font-awesome": "4.7.0",
     "react-icons": "3.2.2",
