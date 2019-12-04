@@ -4,6 +4,9 @@
 
 ## <next>
 
+## 0.0.5
+* Updated dependency version of react-tree-component
+
 ## 0.0.4
 * Fixed defaultExpandedKeys property
 
