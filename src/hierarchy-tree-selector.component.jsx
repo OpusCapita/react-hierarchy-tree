@@ -128,8 +128,8 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     };
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.defaultExpandedKeys.length > 0 && prevProps.defaultExpandedKeys.length === 0) {
+  componentDidMount() {
+    if (this.props.defaultExpandedKeys.length > 0) {
       this.onExpand(this.props.defaultExpandedKeys);
     }
   }
