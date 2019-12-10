@@ -3,6 +3,9 @@
 * In general follow (https://docs.npmjs.com/getting-started/semantic-versioning) versioning.
 
 ## <next>
+* Added leafValueKey property
+* Added sortKey property
+* Fix expanding defaultExpandedKeys
 
 ## 0.0.6
 * Updated dependency version of react-tree-component

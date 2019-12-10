@@ -29,8 +29,8 @@ const GRID_COLUMNS = [{
 }, {
   header: 'Age',
   valueKeyPath: ['age'],
-  valueType: 'text',
-  componentType: 'text',
+  valueType: 'number',
+  componentType: 'number',
 }];
 
 const HierarchySelector = styled(HierarchyTreeSelector)`
@@ -70,6 +70,7 @@ export default class ComponentView extends React.PureComponent {
       gridTitle: 'Example persons',
       treeTitle: 'Example hierarchy',
       defaultNewNode: 'New parent item',
+      add: 'Add level',
     };
 
     return (
@@ -82,6 +83,9 @@ export default class ComponentView extends React.PureComponent {
         onPreventDelete={this.onPreventDelete}
         lockedKey="disabled"
         translations={translations}
+        sortKey="name"
+        valueKey="name"
+        leafValueKey="fullName"
       />
     );
   }

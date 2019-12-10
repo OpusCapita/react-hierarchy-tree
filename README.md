@@ -24,10 +24,12 @@ Also you need to configure sass loader, since all the styles are in sass format.
 | Prop name                | Type             | Default                                  | Description                              |
 | ------------------------ | ---------------- | ---------------------------------------- | ---------------------------------------- |
 | idKey                    | string           | 'id'                                     | Tree item's unique identifier property   |
-| valueKey                 | string           | 'name'                                   | Tree item's name property                |
+| valueKey                 | string           | 'name'                                   | Tree item's node name property           |
+| leafValueKey             | string           | undefined                                | Tree item's leaf name property (if differs from valueKey) |
 | childKey                 | string           | 'children'                               | Property where you'll find tree item's children |
 | defaultExpandedKeys      | array            | []                                       | Array of items that are expanded by default (ids).  |
 | lockedKey                | string           | undefined                                | Property that tells whether node or it's parents can be deleted, moved, etc. |
+| sortKey                  | string           | undefined                                | Tree item's property used for grid sorting (if needed) |
 | treeData                 | array            | []                                       | Array of tree items |
 | onChange                 | func             | required                                 | onChange callback |
 | onPreventDelete          | func             | undefined                                | Function that's called when deleting a locked item |

@@ -20,7 +20,8 @@ const Container = styled.div`
 
 const Button = styled(Primitive.Button)`
   margin-left: ${props => props.theme.halfGutterWidth};
-  min-width: 120px;
+  min-width: 124px;
+  padding: 0.5rem;
 `;
 
 const Controls = styled.div`

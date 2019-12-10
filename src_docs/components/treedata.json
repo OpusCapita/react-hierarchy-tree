@@ -19,6 +19,7 @@
               {
                 "id": "d3d1fcce-3e6d-418a-bd2e-6a091563eab2",
                 "name": "Gomez",
+                "fullName": "Gomez, 75",
                 "age": 75
               }
             ]
@@ -41,6 +42,7 @@
                   {
                     "id": "a8c642b4-cf6b-423c-a4e4-b7595099116c",
                     "name": "Martin",
+                    "fullName": "Martin, 57",
                     "age": 57
                   }
                 ]
@@ -65,17 +67,20 @@
               {
                 "id": "6ba489e5-58da-4fbe-89cf-bdc342923fac",
                 "name": "Marta",
+                "fullName": "Marta, 34",
                 "age": 34
               },
               {
                 "id": "45945861-6b79-4112-8f14-a5283f103b65",
                 "name": "Yates (disabled)",
+                "fullName": "Yates, 28",
                 "age": 28,
                 "disabled": true
               },
               {
                 "id": "5a188510-d5ee-4e30-923d-d26ad5385ae7",
                 "name": "Frieda (disabled)",
+                "fullName": "Frieda, 16",
                 "age": 16,
                 "disabled": true
               }
