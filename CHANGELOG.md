@@ -3,6 +3,8 @@
 * In general follow (https://docs.npmjs.com/getting-started/semantic-versioning) versioning.
 
 ## <next>
+
+## 0.0.7
 * Added leafValueKey property
 * Added sortKey property
 * Fix expanding defaultExpandedKeys
