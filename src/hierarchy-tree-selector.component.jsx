@@ -83,6 +83,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     valueKey: PropTypes.string,
     childKey: PropTypes.string,
     lockedKey: PropTypes.string,
+    sortKey: PropTypes.string,
     treeData: PropTypes.arrayOf(PropTypes.shape({})),
     grid: gridShape.isRequired,
     gridColumns: PropTypes.arrayOf(gridColumnShape).isRequired,
@@ -107,6 +108,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     valueKey: 'name',
     childKey: 'children',
     lockedKey: undefined,
+    sortKey: undefined,
     treeData: [],
     className: '',
     translations: defaultTranslations,
@@ -404,9 +406,12 @@ export default class HierarchyTreeSelector extends React.PureComponent {
    */
   setDataToGrid = (items, setNewItems = false) => {
     let data = List();
-    const { grid, gridColumns, gridData } = this.props;
+    const {
+      grid, gridColumns, gridData, sortKey,
+    } = this.props;
     if (!setNewItems) data = gridData.slice();
-    const newGridItems = data.concat(items);
+    let newGridItems = data.concat(items);
+    if (sortKey) newGridItems = newGridItems.sortBy(i => i.get(sortKey));
 
     this.props.setData(grid, gridColumns, newGridItems);
     this.props.clearSelectedItems(grid);
