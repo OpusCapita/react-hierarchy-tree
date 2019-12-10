@@ -83,6 +83,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     valueKey: PropTypes.string,
     childKey: PropTypes.string,
     lockedKey: PropTypes.string,
+    leafValueKey: PropTypes.string,
     sortKey: PropTypes.string,
     treeData: PropTypes.arrayOf(PropTypes.shape({})),
     grid: gridShape.isRequired,
@@ -108,6 +109,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     valueKey: 'name',
     childKey: 'children',
     lockedKey: undefined,
+    leafValueKey: undefined,
     sortKey: undefined,
     treeData: [],
     className: '',
@@ -508,6 +510,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   render() {
     const {
       valueKey,
+      leafValueKey,
       idKey,
       treeData,
       grid,
@@ -528,6 +531,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
               treeData={treeData}
               dataLookUpKey={idKey}
               dataLookUpValue={valueKey}
+              dataLookUpLeafValue={leafValueKey}
               dataLookUpChildren={childKey}
               onSelect={this.onTreeItemSelect}
               onExpand={this.onExpand}

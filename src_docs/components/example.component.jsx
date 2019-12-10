@@ -84,6 +84,8 @@ export default class ComponentView extends React.PureComponent {
         lockedKey="disabled"
         translations={translations}
         sortKey="name"
+        valueKey="name"
+        leafValueKey="fullName"
       />
     );
   }
