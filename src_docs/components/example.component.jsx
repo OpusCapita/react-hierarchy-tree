@@ -70,7 +70,7 @@ export default class ComponentView extends React.PureComponent {
       gridTitle: 'Example persons',
       treeTitle: 'Example hierarchy',
       defaultNewNode: 'New parent item',
-      add: 'Ebene hinzufügen',
+      add: 'Add level',
     };
 
     return (
