@@ -98,7 +98,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     defaultExpandAll: PropTypes.bool,
     defaultExpandedKeys: PropTypes.arrayOf(PropTypes.string),
     singleRoot: PropTypes.bool,
-    maxLevels: PropTypes.number,
+    maxLevel: PropTypes.number,
     // Callbacks
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
@@ -122,7 +122,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     defaultExpandAll: true,
     defaultExpandedKeys: [],
     singleRoot: true,
-    maxLevels: 0,
+    maxLevel: 0,
   };
 
   constructor(props) {
@@ -422,14 +422,19 @@ export default class HierarchyTreeSelector extends React.PureComponent {
   };
 
   countParents = (selectedKey, counter) => {
-    const { childKey, idKey, treeData } = this.props;
-    return 0;
+    const { idKey, treeData } = this.props;
+    const newParent = this.getTreeItem(selectedKey, treeData, true);
+    if (newParent) {
+      return this.countParents(newParent[idKey], counter + 1);
+    }
+    return counter;
   }
 
   hasLevelReachedMax = (selectedLevel) => {
-    const { maxLevels } = this.props;
-    if (!selectedLevel || !maxLevels) return false;
-    return this.countParents(selectedLevel, 0) > maxLevels;
+    const { maxLevel } = this.props;
+    if (!selectedLevel || !maxLevel) return false;
+    const numberOfParents = this.countParents(selectedLevel, 0);
+    return numberOfParents >= maxLevel;
   }
 
   /**

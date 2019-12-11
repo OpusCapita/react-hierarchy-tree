@@ -31,6 +31,7 @@ Also you need to configure sass loader, since all the styles are in sass format.
 | lockedKey                | string           | undefined                                | Property that tells whether node or it's parents can be deleted, moved, etc. |
 | sortKey                  | string           | undefined                                | Tree item's property used for grid sorting (if needed) |
 | treeData                 | array            | []                                       | Array of tree items |
+| maxLevel                 | number           | 0                                        | Maximal allowed number of hierarchy levels (if greater than 0) |
 | onChange                 | func             | required                                 | onChange callback |
 | onPreventDelete          | func             | undefined                                | Function that's called when deleting a locked item |
 | grid                     | gridShape        | required                                 | @opuscapita/react-grid. See documentation for details |
