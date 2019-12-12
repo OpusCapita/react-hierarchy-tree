@@ -98,6 +98,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     defaultExpandAll: PropTypes.bool,
     defaultExpandedKeys: PropTypes.arrayOf(PropTypes.string),
     singleRoot: PropTypes.bool,
+    maxLevel: PropTypes.number,
     // Callbacks
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
@@ -121,6 +122,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     defaultExpandAll: true,
     defaultExpandedKeys: [],
     singleRoot: true,
+    maxLevel: 0,
   };
 
   constructor(props) {
@@ -419,6 +421,22 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     this.props.clearSelectedItems(grid);
   };
 
+  countParents = (selectedKey, counter) => {
+    const { idKey, treeData } = this.props;
+    const newParent = this.getTreeItem(selectedKey, treeData, true);
+    if (newParent) {
+      return this.countParents(newParent[idKey], counter + 1);
+    }
+    return counter;
+  }
+
+  hasLevelReachedMax = (selectedLevel) => {
+    const { maxLevel } = this.props;
+    if (!selectedLevel || !maxLevel) return false;
+    const numberOfParents = this.countParents(selectedLevel, 0);
+    return numberOfParents >= maxLevel;
+  }
+
   /**
    * Checks whether or not given node is disabled
    */
@@ -504,6 +522,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
       selectedTreeItem={this.getTreeItem(this.state.selectedKeys[0])}
       height={ACTION_BAR_CONTAINER_HEIGHT}
       translations={translations}
+      isAddDisabled={this.hasLevelReachedMax(this.state.selectedKeys[0])}
     />
   );
 

@@ -96,9 +96,10 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
    */
   isAddDisabled = () => {
     const {
-      selectedTreeItem, childKey, singleRoot,
+      selectedTreeItem, childKey, singleRoot, isAddDisabled,
     } = this.props;
 
+    if (isAddDisabled) return true;
     // If only a single root is allowed, we can't add new items if no items are selected
     if (!selectedTreeItem) return singleRoot;
     return !isSelectedTreeItemParent(this.props)
@@ -174,8 +175,10 @@ HierarchyTreeSelectorControlBar.propTypes = {
   id: PropTypes.string.isRequired,
   height: PropTypes.string.isRequired,
   singleRoot: PropTypes.bool.isRequired,
+  isAddDisabled: PropTypes.bool,
 };
 
 HierarchyTreeSelectorControlBar.defaultProps = {
   selectedTreeItem: null,
+  isAddDisabled: false,
 };
