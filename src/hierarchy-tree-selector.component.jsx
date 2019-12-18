@@ -99,6 +99,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     defaultExpandedKeys: PropTypes.arrayOf(PropTypes.string),
     singleRoot: PropTypes.bool,
     maxLevel: PropTypes.number,
+    maxValueLength: PropTypes.number,
     // Callbacks
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
@@ -123,6 +124,7 @@ export default class HierarchyTreeSelector extends React.PureComponent {
     defaultExpandedKeys: [],
     singleRoot: true,
     maxLevel: 0,
+    maxValueLength: undefined,
   };
 
   constructor(props) {
