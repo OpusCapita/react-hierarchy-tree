@@ -86,6 +86,7 @@ export default class ComponentView extends React.PureComponent {
         sortKey="name"
         valueKey="name"
         leafValueKey="fullName"
+        maxValueLength={50}
       />
     );
   }

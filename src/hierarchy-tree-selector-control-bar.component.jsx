@@ -120,8 +120,12 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
 
   render() {
     const {
-      translations, id, height,
+      translations, id, height, maxValueLength,
     } = this.props;
+    const otherProps = {};
+    if (maxValueLength) {
+      otherProps.maxLength = maxValueLength;
+    }
 
     return (
       <Container height={height}>
@@ -136,6 +140,7 @@ export default class HierarchyTreeSelectorControlBar extends React.PureComponent
               this.input = input;
             }}
             onKeyDown={this.onRenameFieldKeyDown}
+            {...otherProps}
           />
 
           <Button
@@ -176,9 +181,11 @@ HierarchyTreeSelectorControlBar.propTypes = {
   height: PropTypes.string.isRequired,
   singleRoot: PropTypes.bool.isRequired,
   isAddDisabled: PropTypes.bool,
+  maxValueLength: PropTypes.number,
 };
 
 HierarchyTreeSelectorControlBar.defaultProps = {
   selectedTreeItem: null,
   isAddDisabled: false,
+  maxValueLength: undefined,
 };
