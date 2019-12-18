@@ -3,6 +3,8 @@
 * In general follow (https://docs.npmjs.com/getting-started/semantic-versioning) versioning.
 
 ## <next>
+
+## 0.0.9
 * Added maxValueLength property
 
 ## 0.0.8
